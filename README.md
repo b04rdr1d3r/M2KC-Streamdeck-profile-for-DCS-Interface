@@ -18,14 +18,16 @@ Once you have all DCS Export Scripts and DCS Interface running, just upload the 
 What works:
 Master Arm / PCA / PPA
 Autopilot (basic functions)
-Fuel Flow and Afterbhurner indicators
+Fuel Flow and Afterburner indicators
 master caution indicator
 Radio (only frequency display ATM)
 PCN / INS (basic functions to enable you to align when on the ground)
 TACAN frequency setting
 
-What does not work well : VOR/ILS frequency setting)
+What does not work well : VOR/ILS frequency setting
 
-Please let me know the bugs and what you'd like to see in the profile
+Please let me know any issue/bug you encounter and what you'd really want to have 
+
+What i'll be working next, improve the visuals to make them more M2K compatible, add a few functions if I can (engine startup ?)
 
 INS icons from RazzleeffDazzle ==> https://www.digitalcombatsimulator.com/en/files/3309542/
