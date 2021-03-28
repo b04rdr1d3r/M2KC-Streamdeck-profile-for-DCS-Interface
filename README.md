@@ -1,9 +1,9 @@
 # M2KC-Streamdeck-profile-for-DCS-Interface
 Mirage 2000C profile for use with DCS interface on a Stream Deck
 
-ALPHA version
+ALPHA version 0.2
 
-This the first alpha release of a Mirage 2000 profile to be used with DCS Interface for Streamdeck
+This alpha release of a Mirage 2000 profile to be used with DCS Interface for Streamdeck
 
 what you need:
 - DCS
@@ -24,8 +24,13 @@ Radio (only frequency display ATM)
 PCN / INS (basic functions to enable you to align when on the ground)
 TACAN frequency setting
 Engine management
+Caution / Warning Lights
 
 What does not work well : VOR/ILS frequency setting
+
+What is to be implemented next
+Radio
+radar
 
 Please let me know any issue/bug you encounter and what you'd really want to have 
 
