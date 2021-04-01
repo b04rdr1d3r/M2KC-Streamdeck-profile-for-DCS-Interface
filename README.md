@@ -1,7 +1,7 @@
 # M2KC-Streamdeck-profile-for-DCS-Interface
 Mirage 2000C profile for use with DCS interface on a Stream Deck
 
-ALPHA version 0.3
+ALPHA version 0.4
 
 This alpha release of a Mirage 2000 profile to be used with DCS Interface for Streamdeck
 
@@ -25,7 +25,7 @@ PCN / INS (basic functions to enable you to align when on the ground)
 TACAN frequency setting
 Engine management
 Caution / Warning Lights
-External lights (sort of)
+External lights
 
 What does not work well : VOR/ILS frequency setting
 
@@ -39,3 +39,4 @@ Please let me know any issue/bug you encounter and what you'd really want to hav
 What i'll be working next, improve the visuals to make them more M2K compatible, add a few functions if I can (engine startup ?)
 
 INS icons from RazzleeffDazzle ==> https://www.digitalcombatsimulator.com/en/files/3309542/
+M-2000 icon from Togg
