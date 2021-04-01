@@ -26,6 +26,7 @@ TACAN frequency setting
 Engine management
 Caution / Warning Lights
 External lights
+VTH panel
 
 What does not work well : VOR/ILS frequency setting
 
