@@ -1,7 +1,7 @@
 # M2KC-Streamdeck-profile-for-DCS-Interface
 Mirage 2000C profile for use with DCS interface on a Stream Deck
 
-ALPHA version 0.4
+ALPHA version 0.5
 
 This alpha release of a Mirage 2000 profile to be used with DCS Interface for Streamdeck
 
@@ -31,8 +31,9 @@ VTH panel
 What does not work well : VOR/ILS frequency setting
 
 What is to be implemented next
-Radio
-radar
+Radio (if possible)
+ECM / countermeasures
+Radar
 internal lights
 
 Please let me know any issue/bug you encounter and what you'd really want to have 
