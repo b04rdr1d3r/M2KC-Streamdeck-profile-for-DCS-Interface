@@ -24,17 +24,14 @@ Radio (only frequency display ATM)
 PCN / INS (basic functions to enable you to align when on the ground)
 TACAN frequency setting
 Engine management
-Caution / Warning Lights
-External lights
+Caution / Warning Panel
+External lights / internal lights
 VTH panel
 Radar (base functions)
 
 What does not work well : VOR/ILS frequency setting
 Radio frequency setting
 
-What is to be implemented next
-ECM / countermeasures
-internal lights
 
 Please let me know any issue/bug you encounter and what you'd really want to have 
 
