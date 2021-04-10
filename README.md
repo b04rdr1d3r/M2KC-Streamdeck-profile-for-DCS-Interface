@@ -38,7 +38,5 @@ internal lights
 
 Please let me know any issue/bug you encounter and what you'd really want to have 
 
-What i'll be working next, improve the visuals to make them more M2K compatible, add a few functions if I can (engine startup ?)
-
 INS icons from RazzleeffDazzle ==> https://www.digitalcombatsimulator.com/en/files/3309542/
 M-2000 icon from Togg
