@@ -1,7 +1,7 @@
 # M2KC-Streamdeck-profile-for-DCS-Interface
 Mirage 2000C profile for use with DCS interface on a Stream Deck
 
-ALPHA version 0.6
+ALPHA version 0.7
 
 This alpha release of a Mirage 2000 profile to be used with DCS Interface for Streamdeck
 
@@ -11,7 +11,7 @@ what you need:
 - a streamdeck
 - DCS Interface ==> https://github.com/charlestytler/streamdeck-dcs-interface
 - DCS Interface requires DCS Exports Scripts (https://github.com/s-d-a/DCS-ExportScripts)
-- DCS Export Scripts M-2000 module is not working properly, until this is corrected, you'll need my version => https://github.com/b04rdr1d3r/DCS-ExportScripts/blob/master/Scripts/DCS-ExportScript/ExportsModules/M-2000C.lua
+- DCS Export Scripts M-2000 module is not working properly, until this is corrected, you'll need to swap this my version with the one supplied by DCS Export Scipts (MANDATORY for PCA and Fueld Flow display to work !)
 
 Once you have all DCS Export Scripts and DCS Interface running, just upload the profile and off you go...
 
@@ -30,9 +30,9 @@ VTH panel
 Radar (base functions)
 
 What does not work well : VOR/ILS frequency setting
+Radio frequency setting
 
 What is to be implemented next
-Radio (not sure if possible)
 ECM / countermeasures
 internal lights
 
