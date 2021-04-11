@@ -862,6 +862,23 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendData(2020, string.format("%s", lCOM1))
 	ExportScript.Tools.SendData(2021, string.format("%s", lCOM2))
 
+ -- extraction of the text showed on the VHF radio panel
+ local lVHF =ExportScript.Tools.getListIndicatorValue(8)
+  if ExportScript.Config.Debug then
+		ExportScript.Tools.WriteToLog('lVHF : '..ExportScript.Tools.dump(lVHF))
+	end
+
+  if lVHF ~= nil and lVHF.text_COM_VHF ~= nil then
+    -- string with max 3 charachters
+    ExportScript.Tools.SendData(2043, string.format("%s", lVHF.text_COM_VHF))
+
+    if ExportScript.Config.Debug then
+      ExportScript.Tools.WriteToLog('2043: '..ExportScript.Tools.dump(lVHF.text_COM_VHF))
+    end
+  else
+    ExportScript.Tools.SendData(2043, " ")
+  end
+
 	-- PPA Bomb Display
 	local lPPA = list_indication(6)
 	if ExportScript.Config.Debug then
@@ -1221,7 +1238,8 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 		ExportScript.Tools.SendDataDAC(2002, "-")
 	end
 ]]
-	-- FUEL
+
+  -- FUEL
 	local lFUEL = ExportScript.Tools.getListIndicatorValue(3)
 
 	if lFUEL ~= nil and lFUEL.txt_fuel_g ~= nil then
@@ -1232,7 +1250,7 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 	end
 
 	-- COM
-	local lCOM = list_indication(9)
+	local lCOM = list_indication(7)
 	if ExportScript.Config.Debug then
 		ExportScript.Tools.WriteToLog('COM : '..ExportScript.Tools.dump(lCOM))
 	end
@@ -1266,7 +1284,7 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendDataDAC(2021, string.format("%s", lCOM2))
 
 	-- PPA (vielelicht die Bomben Anzeige unten rechts)
-	local lPPA = list_indication(8)
+	local lPPA = list_indication(6)
 	if ExportScript.Config.Debug then
 		ExportScript.Tools.WriteToLog('PPA : '..ExportScript.Tools.dump(lPPA))
 	end
@@ -1302,19 +1320,21 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 	-- send data
 	ExportScript.Tools.FlushDataDAC(#ExportScript.Config.DAC)
 
-	--[[
-	ExportScript.Tools.WriteToLog('list_cockpit_params(): '..ExportScript.Tools.dump(list_cockpit_params()))
-	ExportScript.Tools.WriteToLog('CMSP: '..ExportScript.Tools.dump(list_indication(7)))
 
+--	ExportScript.Tools.WriteToLog('list_cockpit_params(): '..ExportScript.Tools.dump(list_cockpit_params()))
+--	ExportScript.Tools.WriteToLog('CMSP: '..ExportScript.Tools.dump(list_indication(7)))
+
+--[[
 	-- list_indication get the value of cockpit displays
 	local ltmp1 = 0
 	for ltmp2 = 0, 20, 1 do
+    ExportScript.Tools.WriteToLog('loop')
 		ltmp1 = list_indication(ltmp2)
 		ExportScript.Tools.WriteToLog(ltmp2..': '..ExportScript.Tools.dump(ltmp1))
 	end
-	]]
---[[
-	-- getmetatable get function name from devices
+  ExportScript.Tools.WriteToLog('end 1')
+
+  -- getmetatable get function name from devices
 	local ltmp1 = 0
 	for ltmp2 = 1, 70, 1 do
 		ltmp1 = GetDevice(ltmp2)
