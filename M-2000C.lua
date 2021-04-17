@@ -3,6 +3,32 @@
 ExportScript.FoundDCSModule = true
 ExportScript.Version.M2000C = "1.2.1"
 
+
+-----------------------------
+--     Helper functions    --
+-----------------------------
+function place_decimal(PCN_string, point_mask)
+  local retval = ""
+  if (PCN_string ~=nil) and (point_mask ~= nil) then
+    if (point_mask:find("%.") ~= nil) then
+      local i = 0
+      for i = 1, #point_mask, 1 do
+        if point_mask:sub(i, i) == "." then
+          retval = retval .. "." .. PCN_string:sub(i, i)
+        else
+          retval = retval .. PCN_string:sub(i, i)
+        end
+      end
+    else
+      retval = PCN_string
+    end
+  end
+  return retval
+end
+
+-----------------------------
+--     Core M-2000C    --
+-----------------------------
 ExportScript.ConfigEveryFrameArguments =
 {
 	--[[
@@ -919,10 +945,12 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 		ExportScript.Tools.WriteToLog('lPCNUR : '..ExportScript.Tools.dump(lPCNUR))
 	end
 
-	--    SubLeftTop    SubRightTop   SubLeftBottom SubRightBottom MainLeft     MainRight
-	local lPCN_sub_L_T, lPCN_sub_R_T, lPCN_sub_L_B, lPCN_sub_R_B,  lPCN_main_L, lPCN_main_R = "", "", "", "", "", ""
 	local lPCNUR = ExportScript.Tools.getListIndicatorValue(9)
-	-- das untere durch solche aufrufe ersetzen
+  --[[ old code valid for 2.5.x
+  --    SubLeftTop    SubRightTop   SubLeftBottom SubRightBottom MainLeft     MainRight
+	local lPCN_sub_L_T, lPCN_sub_R_T, lPCN_sub_L_B, lPCN_sub_R_B,  lPCN_main_L, lPCN_main_R = "", "", "", "", "", ""
+
+  -- das untere durch solche aufrufe ersetzen
 	if lPCNUR.text_PCN_R_INT ~= nil then
 		lPCN_main_R = lPCNUR.text_PCN_R_INT
 	end
@@ -1002,6 +1030,87 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 		lPCN_main_L = lPCNUR.text_PCN_MSG
 	end
 
+  if ExportScript.Config.Debug then
+     -- string with max 1 charachters
+    ExportScript.Tools.WriteToLog("2024: "..string.format("%s", lPCN_sub_L_T))
+    ExportScript.Tools.WriteToLog("2025: "..string.format("%s", lPCN_sub_R_T))
+    ExportScript.Tools.WriteToLog("2026: "..string.format("%s", lPCN_sub_L_B))
+    ExportScript.Tools.WriteToLog("2027: "..string.format("%s", lPCN_sub_R_B))
+     -- string with max 9 charachters
+    ExportScript.Tools.WriteToLog("2028: "..string.format("%s", lPCN_main_L))
+    ExportScript.Tools.WriteToLog("2029: "..string.format("%s", lPCN_main_R))
+  end
+
+  lPCN_main_L = lPCN_main_L:gsub(":", "¦")
+  lPCN_main_R = lPCN_main_R:gsub(":", "¦")
+  lPCN_main_L = lPCN_main_L:sub(0, 10)
+  lPCN_main_R = lPCN_main_R:sub(0, 10)
+  lPCN_sub_L_T = lPCN_sub_L_T:sub(0, 2)
+  lPCN_sub_R_T = lPCN_sub_R_T:sub(0, 2)
+  lPCN_sub_L_B = lPCN_sub_L_B:sub(0, 2)
+  lPCN_sub_R_B = lPCN_sub_R_B:sub(0, 2)
+
+  ExportScript.Tools.SendData(2024, string.format("%s", lPCN_sub_L_T))
+  ExportScript.Tools.SendData(2025, string.format("%s", lPCN_sub_R_T))
+  ExportScript.Tools.SendData(2026, string.format("%s", lPCN_sub_L_B))
+  ExportScript.Tools.SendData(2027, string.format("%s", lPCN_sub_R_B))
+  ExportScript.Tools.SendData(2028, string.format("%s", lPCN_main_L))
+  ExportScript.Tools.SendData(2029, string.format("%s", lPCN_main_R))
+  ]]
+
+  local lPCN_sub_L_T, lPCN_sub_R_T, lPCN_sub_L_B, lPCN_sub_R_B, lPCN_main_L, lPCN_main_R, lPCN_mask_L, lPCN_mask_R = "", "", "", "", "", "", "", ""
+  -- map N and S
+  if lPCNUR.PCN_UL_N ~= nil then
+    lPCN_sub_L_T = lPCNUR.PCN_UL_N
+  end
+  if lPCNUR.PCN_UL_S ~= nil then
+    lPCN_sub_L_B = lPCNUR.PCN_UL_S
+  end
+  -- map E and W
+  if lPCNUR.PCN_UR_E ~= nil then
+    lPCN_sub_R_T  = lPCNUR.PCN_UR_E
+  end
+  if lPCNUR.PCN_UR_W ~= nil then
+    lPCN_sub_R_B = lPCNUR.PCN_UR_W
+  end
+  -- retrieve + and -
+  if lPCNUR.PCN_UL_P ~= nil then
+    lPCN_sub_L_T = lPCNUR.PCN_UL_P
+  end
+  if lPCNUR.PCN_UL_M ~= nil then
+    lPCN_sub_L_B = lPCNUR.PCN_UL_M
+  end
+  if lPCNUR.PCN_UR_P ~= nil then
+    lPCN_sub_R_T = lPCNUR.PCN_UR_P
+  end
+  if lPCNUR.PCN_UR_M ~= nil then
+    lPCN_sub_R_B = lPCNUR.PCN_UR_M
+  end
+
+  -- retrieve main text
+  if lPCNUR.PCN_UL_DIGITS ~= nil then
+    lPCN_main_L = lPCNUR.PCN_UL_DIGITS
+  end
+  if lPCNUR.PCN_UR_DIGITS ~= nil then
+    lPCN_main_R = lPCNUR.PCN_UR_DIGITS
+  end
+  -- retrieve mask
+  if lPCNUR.PCN_UL_POINTS ~= nil then
+     lPCN_mask_L = lPCNUR.PCN_UL_POINTS
+  end
+  if lPCNUR.PCN_UR_POINTS ~= nil then
+     lPCN_mask_R = lPCNUR.PCN_UR_POINTS
+  end
+
+  local lPCN_main_L_D, lPCN_main_R_D = "", "" -- initialize variables that will hold the cleaned up text
+  -- retrieve main digits and place the points according to the mask
+  if (#lPCN_main_L ~= 0) then
+    lPCN_main_L_D = place_decimal(lPCN_main_L, lPCN_mask_L)
+  end
+  if (#lPCN_main_R ~= 0) then
+    lPCN_main_R_D = place_decimal(lPCN_main_R, lPCN_mask_R)
+  end
+
 	if ExportScript.Config.Debug then
 		 -- string with max 1 charachters
 		ExportScript.Tools.WriteToLog("2024: "..string.format("%s", lPCN_sub_L_T))
@@ -1011,7 +1120,13 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 		 -- string with max 9 charachters
 		ExportScript.Tools.WriteToLog("2028: "..string.format("%s", lPCN_main_L))
 		ExportScript.Tools.WriteToLog("2029: "..string.format("%s", lPCN_main_R))
-	end
+    -- export string on txo Lines
+    ExportScript.Tools.WriteToLog("2054: "..string.format("%s", lPCN_sub_L_T .. "\n" .. lPCN_sub_L_B))
+		ExportScript.Tools.WriteToLog("2055: "..string.format("%s", lPCN_sub_R_T .. "\n" .. lPCN_sub_R_B))
+    -- export clean strings with poinjts
+    ExportScript.Tools.WriteToLog("2056: "..string.format("%s", lPCN_main_L_D))
+		ExportScript.Tools.WriteToLog("2057: "..string.format("%s", lPCN_main_R_D))
+  end
 
 	lPCN_main_L = lPCN_main_L:gsub(":", "¦")
 	lPCN_main_R = lPCN_main_R:gsub(":", "¦")
@@ -1028,8 +1143,14 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendData(2027, string.format("%s", lPCN_sub_R_B))
 	ExportScript.Tools.SendData(2028, string.format("%s", lPCN_main_L))
 	ExportScript.Tools.SendData(2029, string.format("%s", lPCN_main_R))
+  -- code below enables the recovery of the two elements on top of each other
+  ExportScript.Tools.SendData(2054, string.format("%s", lPCN_sub_L_T .. "\n" .. lPCN_sub_L_B))
+  ExportScript.Tools.SendData(2055, string.format("%s", lPCN_sub_R_T .. "\n" .. lPCN_sub_R_B))
+  ExportScript.Tools.SendData(2056, string.format("%s", lPCN_main_L_D))
+  ExportScript.Tools.SendData(2057, string.format("%s", lPCN_main_R_D))
 
 	-- PCN_BR (Naviagation, wahrscheinlich die Wegpunktanzeige)
+  --[[ OLD CODE BELOW for 2.5.6
 	local lPCNBR = list_indication(10)
 	if ExportScript.Config.Debug then
 		ExportScript.Tools.WriteToLog('lPCNBR : '..ExportScript.Tools.dump(lPCNBR))
@@ -1054,6 +1175,25 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 			end
 		end
 	end
+  ]]
+  -- NEW CODE below for 2.7
+  local lPCNBR = list_indication(10)
+  if ExportScript.Config.Debug then
+  	ExportScript.Tools.WriteToLog('lPCNBR : '..ExportScript.Tools.dump(lPCNBR))
+  end
+
+  local lPCNBR = ExportScript.Tools.getListIndicatorValue(10)
+
+  if lPCNBR ~= nil and lPCNBR.PCN_BL_DIGITS ~= nil then
+    lPCN_BR1 = lPCNBR.PCN_BL_DIGITS
+  else
+    lPCN_BR1 = "  "
+  end
+  if lPCNBR ~= nil and lPCNBR.PCN_BR_DIGITS ~= nil then
+    lPCN_BR2 = lPCNBR.PCN_BR_DIGITS
+  else
+    lPCN_BR2 = "  "
+  end
 
 	-- string with max 2 charachters
 	if ExportScript.Config.Debug then
@@ -1200,7 +1340,15 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 		ExportScript.Tools.WriteToLog('227: '..ExportScript.Tools.dump(string.format("%1.0f",mainPanelDevice:get_argument_value(227) * 10)))
 	end
 
-	ExportScript.Tools.FlushData()
+  -- engine % (cleaned up from float stored in DCS ID 369)
+  local lEngine_percent = ""
+  if ExportScript.Config.Debug then
+    ExportScript.Tools.WriteToLog('2058: '..ExportScript.Tools.dump(string.format("%1.0f",mainPanelDevice:get_argument_value(369) * 100)))
+  end
+  lEngine_percent = string.format("%1.0f", mainPanelDevice:get_argument_value(369) * 100) .. "%"
+  ExportScript.Tools.SendData(2058, lEngine_percent)
+
+  ExportScript.Tools.FlushData()
 end
 
 function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
@@ -1320,11 +1468,11 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 	-- send data
 	ExportScript.Tools.FlushDataDAC(#ExportScript.Config.DAC)
 
-
---	ExportScript.Tools.WriteToLog('list_cockpit_params(): '..ExportScript.Tools.dump(list_cockpit_params()))
---	ExportScript.Tools.WriteToLog('CMSP: '..ExportScript.Tools.dump(list_indication(7)))
-
+-- uncomment the code below to access DCS exported parameters
 --[[
+	ExportScript.Tools.WriteToLog('list_cockpit_params(): '..ExportScript.Tools.dump(list_cockpit_params()))
+	ExportScript.Tools.WriteToLog('CMSP: '..ExportScript.Tools.dump(list_indication(7)))
+
 	-- list_indication get the value of cockpit displays
 	local ltmp1 = 0
 	for ltmp2 = 0, 20, 1 do
