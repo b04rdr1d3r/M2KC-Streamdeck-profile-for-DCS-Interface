@@ -4,7 +4,7 @@ Mirage 2000C profile for use with DCS interface on a Stream Deck
 
 BETA version 0.9
 
-This alpha release of a Mirage 2000 profile to be used with DCS Interface for Streamdeck
+This beta release of a Mirage 2000 profile to be used with DCS Interface for Streamdeck
 
 what you need:
 - DCS 2.7 (2.7 version is required)
