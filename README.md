@@ -20,6 +20,7 @@ What's new in this version:
 PCN fully made compatible with updates of version 2.7 and cleaned up to be prettier and more like the actual display
 PCA corrected to work with 2.7
 Engine needle (%age) now displayed as actual percentage instead of floating point number (and made white)
+Added the jettison / selective jettison functions
 
 
 What works:
