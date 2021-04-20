@@ -2,9 +2,9 @@
 Mirage 2000C profile for use with DCS interface on a Stream Deck
 (c) Blue Storm 2021
 
-BETA version 0.9
+RELEASE version 1.0
 
-This beta release of a Mirage 2000 profile to be used with DCS Interface for Streamdeck
+a Mirage 2000 profile to be used with DCS Interface for Streamdeck
 
 what you need:
 - DCS 2.7 (2.7 version is required)
@@ -17,33 +17,30 @@ what you need:
 Once you have all DCS Export Scripts and DCS Interface running, just upload the profile and off you go...
 
 What's new in this version:
-PCN fully made compatible with updates of version 2.7 and cleaned up to be prettier and more like the actual display
-PCA corrected to work with 2.7
-Engine needle (%age) now displayed as actual percentage instead of floating point number (and made white)
-Added the jettison / selective jettison functions
-
+- updated icons with some borrowed from Ikarus
+- added RWR menu
+- added GEAR lights menu
+- improved PCN
 
 What works:
-Master Arm / PCA / PPA
+Gear lights / FBW switch
+VTH display and selected switches
+RWR lights and associated switches
+Jettison selective / Emergency
 Autopilot (basic functions)
 Fuel Flow and Afterburner indicators
 master caution indicator
-Radio frequency display / setting (except for UHF)
+UHF / VHF radio => caution UHF radio selector not 100% effective
 PCN / INS (basic functions to enable you to align when on the ground)
-TACAN frequency setting
-Engine management
+PSM => caution channel 10 tacan selector and decimal switch VOR/ILS not fully functional
+Engine management + startup test switches (FBW + AP)
 Caution / Warning Lights
-External lights
-VTH panel
+External lights + internal lights (with pre-select intensity)
 Radar (base functions)
 
-What does not work well : VOR/ILS frequency setting
-Radio UHF frequency setting
-
-What is to be implemented next
-ECM / countermeasures
-internal lights
+What does not work well : VOR/ILS frequency setting / Tacan channel 10 selector / Radio UHF frequency setting
 
 Please let me know any issue/bug you encounter and what you'd really want to have
 
 M-2000 icon from Togg (currently linked to a menu profile... so you can switch to whatever you want)
+some icons borrowed from Ikarus => https://github.com/H-J-P/Ikarus
