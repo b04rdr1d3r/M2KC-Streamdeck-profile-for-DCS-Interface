@@ -2,7 +2,7 @@
 Mirage 2000C profile for use with DCS interface on a Stream Deck
 (c) Blue Storm 2021
 
-RELEASE version 1.0
+RELEASE version 1.01
 
 a Mirage 2000 profile to be used with DCS Interface for Streamdeck
 
@@ -17,10 +17,7 @@ what you need:
 Once you have all DCS Export Scripts and DCS Interface running, just upload the profile and off you go...
 
 What's new in this version:
-- updated icons with some borrowed from Ikarus
-- added RWR menu
-- added GEAR lights menu
-- improved PCN
+- small bugfix for Autopilot
 
 What works:
 Gear lights / FBW switch
