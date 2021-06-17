@@ -2,12 +2,12 @@
 Mirage 2000C profile for use with DCS interface on a Stream Deck
 (c) Blue Storm 2021
 
-RELEASE version 1.01
+RELEASE version 1.02
 
 a Mirage 2000 profile to be used with DCS Interface for Streamdeck
 
 what you need:
-- DCS 2.7 (2.7 version is required)
+- DCS 2.7.2
 - the Mirage 2000C module by Razbam
 - a streamdeck
 - DCS Interface ==> https://github.com/charlestytler/streamdeck-dcs-interface
@@ -17,7 +17,7 @@ what you need:
 Once you have all DCS Export Scripts and DCS Interface running, just upload the profile and off you go...
 
 What's new in this version:
-- small bugfix for Autopilot
+- updated for 2.7.2 that changed some of the internal exported data
 
 What works:
 Gear lights / FBW switch
