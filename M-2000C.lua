@@ -800,7 +800,12 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 			if (from2 ~= nill) then
 				to1, to2 = lPCAUR:find("%c", from2+2)
 				if (to1 ~= nil) then
-					lPCA_UR[lIndex] = lPCAUR:sub(from2+1, to1-1)
+          tmpStr = lPCAUR:sub(from2+1, to1-1)
+          if (tmpStr:sub(2,2) == '-') then
+            lPCA_UR[lIndex] = ""
+          else
+            lPCA_UR[lIndex] = tmpStr
+          end
 				end
 			end
 		end -- for
@@ -836,7 +841,12 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 			if (from2 ~= nill) then
 				to1, to2 = lPCABR:find("%c", from2+2)
 				if (to1 ~= nil) then
-					lPCA_BR[lIndex] = lPCABR:sub(from2+1, to1-1)
+          tmpStr = lPCABR:sub(from2+1, to1-1)
+          if (tmpStr:sub(2,2) == '-') then
+            lPCA_BR[lIndex] = ""
+          else
+            lPCA_BR[lIndex] = tmpStr
+          end
 				end
 			end
 		end-- for
