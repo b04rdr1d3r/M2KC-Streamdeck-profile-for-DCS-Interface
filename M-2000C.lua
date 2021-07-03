@@ -220,8 +220,8 @@ ExportScript.ConfigEveryFrameArguments =
 	[381] = "%.4f",	--	00X0
 	[382] = "%.4f",	--	000X
 
-	[388] = "%.1f",	--	Rote Kontrollampe MODE-4 Panel
-	[394] = "%.1f",	--	gelbe „FAULT“ Anzeige
+	[388] = "%.1f",	--	Témoin de contrôle rouge panneau MODE-4
+	[394] = "%.1f",	--	affichage jaune "FAULT"
 
 -- Pressuge
 	[397] = "%.4f",	--Needle left
@@ -236,15 +236,15 @@ ExportScript.ConfigEveryFrameArguments =
 	[403] = "%.4f",	--seconds
 
 -- GEARPANEL
-	[405] = "%.1f",	-- 	Gearhandle Innenleuchte, rot
-	[410] = "%.1f",	-- 	„A“ Warnlamp
-	[411] = "%.1f",	-- 	„F“ Warnlamp
-	[412] = "%.1f",	--  „DIRA“ Warnlamp, blau
-	[413] = "%.1f",	-- 	„FREIN“
-	[414] = "%.1f",	-- 	„Cross“
-	[415] = "%.1f",	-- 	„SPAD“
-	[416] = "%.1f",	-- 	Rote Warnlamp unter „BIP“
-	[417] = "%.1f",	-- 	Left Gear ?, grüne Warnlampen
+	[405] = "%.1f",	-- 	Lampe trein principal, rouge
+	[410] = "%.1f",	-- 	Voyant "A“
+	[411] = "%.1f",	-- 	Voyant "F“
+	[412] = "%.1f",	--  Voyant "DIRAV", bleu
+	[413] = "%.1f",	-- 	"FREIN“
+	[414] = "%.1f",	-- 	"Cross“
+	[415] = "%.1f",	-- 	"SPAD“
+	[416] = "%.1f",	-- 	voyant rouge sous "BIP"
+	[417] = "%.1f",	-- 	Left Gear ?, voyants verts
 	[418] = "%.1f",	-- 	Nose Gear ?
 	[419] = "%.1f",	-- 	Right Gear ?
 
@@ -277,13 +277,13 @@ ExportScript.ConfigEveryFrameArguments =
 
 
 -- Left consule Lamps
-	[490] = "%.1f",	-- „VAL”
-	[492] = "%.1f",	-- „A“ Kontrolllampe  mittleres Panel
-	[494] = "%.1f",	-- „DEC“ Kontrollampe
-	[496] = "%.1f",	-- „VISU“
-	[505] = "%.1f",	-- „PSIC“
-	[510] = "%.1f",	-- „ELEC“
-	[511] = "%.1f",	-- „HYD“
+	[490] = "%.1f",	-- "VAL”
+	[492] = "%.1f",	-- Voyant de contrôle "A" dans le panneau central
+	[494] = "%.1f",	-- Voyant "DEC“
+	[496] = "%.1f",	-- "VISU“
+	[505] = "%.1f",	-- "PSIC“
+	[510] = "%.1f",	-- "ELEC“
+	[511] = "%.1f",	-- "HYD“
 	[512] = "%.1f",	-- Red
 	[513] = "%.1f",	-- GREEN
 
@@ -333,25 +333,25 @@ ExportScript.ConfigEveryFrameArguments =
 	[563] = "%.1f",	--  PARK.
 
 -- Lamps Right Console
-	[564] = "%.1f",	--	“PRET”  grüne Doppelanzeige, unten
-	[565] = "%.1f",	--	„ALN“
-	[566] = "%.1f",	--	„MIP“
-	[567] = "%.1f",	--	„N.DEG“
-	[568] = "%.1f",	--	„SEC“
-	[569] = "%.1f",	--	„UNI“
-	[669] = "%.1f",	--  „M01”
-	[670] = "%.1f",	--	„M02“
-	[671] = "%.1f",	--	„M03“
+	[564] = "%.1f",	--	“PRET”  Affichage Vert
+	[565] = "%.1f",	--	"ALN“
+	[566] = "%.1f",	--	"MIP“
+	[567] = "%.1f",	--	"N.DEG“
+	[568] = "%.1f",	--	"SEC“
+	[569] = "%.1f",	--	"UNI“
+	[669] = "%.1f",	--  "M01”
+	[670] = "%.1f",	--	"M02“
+	[671] = "%.1f",	--	"M03“
 
-	[571] = "%.1f",	--	“PREP” WL, gelb
-	[573] = "%.1f",	--	“DEST” WL, gelb
-	[577] = "%.1f",	--	“BAD” WL gelb/grün
+	[571] = "%.1f",	--	“PREP” WL, Jaune
+	[573] = "%.1f",	--	“DEST” WL, Jaune
+	[577] = "%.1f",	--	“BAD” WL Jaune/vert
 	[579] = "%.1f",	--	“REC”
 	[581] = "%.1f",	--	“VAL”
 	[583] = "%.1f",	--	“MRC”
-	[595] = "%.1f",	--	“EFF” runde Warnlampe
-	[597] = "%.1f",	--	“INS” runde WL
-	[668] = "%.1f",	--  “ENC” WL gelb/grün
+	[595] = "%.1f",	--	“EFF” voyant rond "EFF" jaune
+	[597] = "%.1f",	--	“INS” voyant rond "INS" jaune
+	[668] = "%.1f",	--  “ENC” voyant rond "ENC" jaune / vert
 
 -- VIERER ANZEIGE
 	[601] = "%.4f",	--	1. Drum
@@ -376,13 +376,13 @@ ExportScript.ConfigEveryFrameArguments =
 	[634] = "%.1f",	--	Taster mit Warnlampe “F”
 
 -- Panel lights
-	[720] = "%.4f",	--	MIP Aufleuchte, red
-	[721] = "%.4f",	--	MIP Hintergrundbeleuchtung, red
-	[722] = "%.4f",	-- 	MIP Aufleuchte, weiß
-	[723] = "%.4f",	--	Linke und rechte Seitenpanels Hintergrundbeleuchtung, red
-	[724] = "%.4f",	--	Seitenpanels Aufleuchten, red (links, rechts)
-	[726] = "%.4f",	--	Warnlampen Dimmer
-	[727] = "%.4f",	--	Warnlampen Dimmer (Seitenpanels?)
+	[720] = "%.4f",	--	Voyant MIP, rouge
+	[721] = "%.4f",	--	Rétroéclairage MIP, rouge
+	[722] = "%.4f",	-- 	Lumière MIP, blanche
+	[723] = "%.4f",	--	Panneaux latéraux gauche et droit, rétroéclairage, rouge
+	[724] = "%.4f",	--	Allumage panneaux latéraux, rouge (gauche, droite)
+	[726] = "%.4f",	--	variateur des voyants
+	[727] = "%.4f",	--	variateur des témoins (panneaux latéraux ?)
 
 }
 
