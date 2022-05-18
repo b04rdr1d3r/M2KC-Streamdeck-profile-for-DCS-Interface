@@ -114,10 +114,10 @@ ExportScript.ConfigEveryFrameArguments =
 -- INSTRUMENTS -------------------------------------------
 
 -- Display Settings
-	--[224] = "%.4f",	--Drum X000
-	--[225] = "%.4f",	--Drum 0X00
-	--[226] = "%.4f",	--Drum 00X0
-	--[227] = "%.4f",	--Drum 000X
+	--[224] = "%.1f",	--Drum X000
+	--[225] = "%.1f",	--Drum 0X00
+	--[226] = "%.1f",	--Drum 00X0
+	--[227] = "%.1f",	--Drum 000X
 
 -- AUTOPILOT ALTITUDE SELECTOR: Adjust autopilot altitude hold value.
 	--[299] = "%.4f",	--Alt Drum X00
@@ -220,8 +220,8 @@ ExportScript.ConfigEveryFrameArguments =
 	[381] = "%.4f",	--	00X0
 	[382] = "%.4f",	--	000X
 
-	[388] = "%.1f",	--	Témoin de contrôle rouge panneau MODE-4
-	[394] = "%.1f",	--	affichage jaune "FAULT"
+	[388] = "%.1f",	--	Rote Kontrollampe MODE-4 Panel
+	[394] = "%.1f",	--	gelbe „FAULT“ Anzeige
 
 -- Pressuge
 	[397] = "%.4f",	--Needle left
@@ -236,15 +236,15 @@ ExportScript.ConfigEveryFrameArguments =
 	[403] = "%.4f",	--seconds
 
 -- GEARPANEL
-	[405] = "%.1f",	-- 	Lampe trein principal, rouge
-	[410] = "%.1f",	-- 	Voyant "A“
-	[411] = "%.1f",	-- 	Voyant "F“
-	[412] = "%.1f",	--  Voyant "DIRAV", bleu
-	[413] = "%.1f",	-- 	"FREIN“
-	[414] = "%.1f",	-- 	"Cross“
-	[415] = "%.1f",	-- 	"SPAD“
-	[416] = "%.1f",	-- 	voyant rouge sous "BIP"
-	[417] = "%.1f",	-- 	Left Gear ?, voyants verts
+	[405] = "%.1f",	-- 	Gearhandle Innenleuchte, rot
+	[410] = "%.1f",	-- 	„A“ Warnlamp
+	[411] = "%.1f",	-- 	„F“ Warnlamp
+	[412] = "%.1f",	--  „DIRA“ Warnlamp, blau
+	[413] = "%.1f",	-- 	„FREIN“
+	[414] = "%.1f",	-- 	„Cross“
+	[415] = "%.1f",	-- 	„SPAD“
+	[416] = "%.1f",	-- 	Rote Warnlamp unter „BIP“
+	[417] = "%.1f",	-- 	Left Gear ?, grüne Warnlampen
 	[418] = "%.1f",	-- 	Nose Gear ?
 	[419] = "%.1f",	-- 	Right Gear ?
 
@@ -277,13 +277,13 @@ ExportScript.ConfigEveryFrameArguments =
 
 
 -- Left consule Lamps
-	[490] = "%.1f",	-- "VAL”
-	[492] = "%.1f",	-- Voyant de contrôle "A" dans le panneau central
-	[494] = "%.1f",	-- Voyant "DEC“
-	[496] = "%.1f",	-- "VISU“
-	[505] = "%.1f",	-- "PSIC“
-	[510] = "%.1f",	-- "ELEC“
-	[511] = "%.1f",	-- "HYD“
+	[490] = "%.1f",	-- „VAL”
+	[492] = "%.1f",	-- „A“ Kontrolllampe  mittleres Panel
+	[494] = "%.1f",	-- „DEC“ Kontrollampe
+	[496] = "%.1f",	-- „VISU“
+	[505] = "%.1f",	-- „PSIC“
+	[510] = "%.1f",	-- „ELEC“
+	[511] = "%.1f",	-- „HYD“
 	[512] = "%.1f",	-- Red
 	[513] = "%.1f",	-- GREEN
 
@@ -333,25 +333,25 @@ ExportScript.ConfigEveryFrameArguments =
 	[563] = "%.1f",	--  PARK.
 
 -- Lamps Right Console
-	[564] = "%.1f",	--	“PRET”  Affichage Vert
-	[565] = "%.1f",	--	"ALN“
-	[566] = "%.1f",	--	"MIP“
-	[567] = "%.1f",	--	"N.DEG“
-	[568] = "%.1f",	--	"SEC“
-	[569] = "%.1f",	--	"UNI“
-	[669] = "%.1f",	--  "M01”
-	[670] = "%.1f",	--	"M02“
-	[671] = "%.1f",	--	"M03“
+	[564] = "%.1f",	--	“PRET”  grüne Doppelanzeige, unten
+	[565] = "%.1f",	--	„ALN“
+	[566] = "%.1f",	--	„MIP“
+	[567] = "%.1f",	--	„N.DEG“
+	[568] = "%.1f",	--	„SEC“
+	[569] = "%.1f",	--	„UNI“
+	[669] = "%.1f",	--  „M01”
+	[670] = "%.1f",	--	„M02“
+	[671] = "%.1f",	--	„M03“
 
-	[571] = "%.1f",	--	“PREP” WL, Jaune
-	[573] = "%.1f",	--	“DEST” WL, Jaune
-	[577] = "%.1f",	--	“BAD” WL Jaune/vert
+	[571] = "%.1f",	--	“PREP” WL, gelb
+	[573] = "%.1f",	--	“DEST” WL, gelb
+	[577] = "%.1f",	--	“BAD” WL gelb/grün
 	[579] = "%.1f",	--	“REC”
 	[581] = "%.1f",	--	“VAL”
 	[583] = "%.1f",	--	“MRC”
-	[595] = "%.1f",	--	“EFF” voyant rond "EFF" jaune
-	[597] = "%.1f",	--	“INS” voyant rond "INS" jaune
-	[668] = "%.1f",	--  “ENC” voyant rond "ENC" jaune / vert
+	[595] = "%.1f",	--	“EFF” runde Warnlampe
+	[597] = "%.1f",	--	“INS” runde WL
+	[668] = "%.1f",	--  “ENC” WL gelb/grün
 
 -- VIERER ANZEIGE
 	[601] = "%.4f",	--	1. Drum
@@ -376,13 +376,13 @@ ExportScript.ConfigEveryFrameArguments =
 	[634] = "%.1f",	--	Taster mit Warnlampe “F”
 
 -- Panel lights
-	[720] = "%.4f",	--	Voyant MIP, rouge
-	[721] = "%.4f",	--	Rétroéclairage MIP, rouge
-	[722] = "%.4f",	-- 	Lumière MIP, blanche
-	[723] = "%.4f",	--	Panneaux latéraux gauche et droit, rétroéclairage, rouge
-	[724] = "%.4f",	--	Allumage panneaux latéraux, rouge (gauche, droite)
-	[726] = "%.4f",	--	variateur des voyants
-	[727] = "%.4f",	--	variateur des témoins (panneaux latéraux ?)
+	[720] = "%.4f",	--	MIP Aufleuchte, red
+	[721] = "%.4f",	--	MIP Hintergrundbeleuchtung, red
+	[722] = "%.4f",	-- 	MIP Aufleuchte, weiß
+	[723] = "%.4f",	--	Linke und rechte Seitenpanels Hintergrundbeleuchtung, red
+	[724] = "%.4f",	--	Seitenpanels Aufleuchten, red (links, rechts)
+	[726] = "%.4f",	--	Warnlampen Dimmer
+	[727] = "%.4f",	--	Warnlampen Dimmer (Seitenpanels?)
 
 }
 
@@ -597,7 +597,7 @@ ExportScript.ConfigArguments =
 	[430] = "%.1f",	--UHF SIL Switch
 	[431] = "%.1f",	--UHF E-A2 Switch
 	[432] = "%.1f",	--UHF CDE Switch
-	[433] = "%.1f",	--UHF Mode Switch
+	[433] = "%.3f",	--UHF Mode Switch
 	[434] = "%.1f",	--UHF TEST Switch
 	[435] = "%.1f",	--UHF Knob
 	[437] = "%.1f",	--U/VHF TEST Switch
@@ -612,11 +612,13 @@ ExportScript.ConfigArguments =
 	[446] = "%.1f",	--U/VHF Mode Switch 1
 	[447] = "%.1f",	--U/VHF Power 5W/25W Switch
 	[448] = "%.1f",	--U/VHF Manual/Preset
+	[950] = "%.1f",	--U/VHF Mode
+
 
 -- Navigational Antennas
 	[616] = "%.1f",	--VOR/ILS Frequency Change Whole
 	[617] = "%.1f",	--VOR/ILS Power Dial
-	[618] = "%.1f",	--VOR/ILS Frequency Change Decimal
+	[618] = "%.2f",	--VOR/ILS Frequency Change Decimal
 	[619] = "%.1f",	--VOR/ILS Test Dial
 
 -- TACAN
@@ -637,6 +639,12 @@ ExportScript.ConfigArguments =
 	[459] = "%.1f",	--Anti-Skid Switch
 	[666] = "%.1f",	--Parking Brake Lever
 	[807] = "%.1f",	--Nose Wheel Steering / IFF
+
+	-- TAF-JVN
+	[968] = "%.2f",	--EVF Channel selector
+	[970] = "%.2f",	--EVF Panel Test
+	[672] = "%.1f",	--NVG lights Filter Switch
+
 
 -- Sound Panel
 	[700] = "%.1f",	--AMPLIS Selector
@@ -674,40 +682,6 @@ ExportScript.ConfigArguments =
 	[637] = "%.1f",	--ECS Temperature Select Knob {-1.0,1.0} in 0.1 steps
 	[638] = "%.1f",	--ECS Defog Switch
 
-  -- Radio Panel VHF
-  [950] = "%.1f", -- VHF MODE(-0.1, 0, 0.6)
-  [950] = "%.1f", -- VHF MODE(0.1, 0, 0.6)
-  [951] = "%.2f", -- VHF CH Sel(-0.05, 0, 0.95)
-  [951] = "%.2f", -- VHF CH Sel(0.05, 0, 0.95)
-  [952] = "%1d", -- VHF MEM/CLR(1, 0, 1)
-  [953] = "%1d", -- VHF VLD/XFR(1, 0, 1)
-  [954] = "%1d", -- VHF 1/READ(1, 0, 1)
-  [955] = "%1d", -- VHF 2/SQL(1, 0, 1)
-  [956] = "%1d", -- VHF 3/GR(1, 0, 1)
-  [957] = "%1d", -- VHF 4(1, 0, 1)
-  [958] = "%1d", -- VHF 5/20/LOW(1, 0, 1)
-  [959] = "%1d", -- VHF 6/TONE(1, 0, 1)
-  [960] = "%1d", -- VHF 7(1, 0, 1)
-  [961] = "%1d", -- VHF 8/TOD(1, 0, 1)
-  [962] = "%1d", -- VHF 9/ZERO(1, 0, 1)
-  [963] = "%1d", -- VHF 0(1, 0, 1)
-  [964] = "%1d", -- VHF CONF(1, 0, 1)
-
-  -- Radio U/VHF Lights
-  [965] = "%.1f", -- CLR/VLD Display
-  [966] = "%.4f", -- ?
-  [967] = "%.4f", -- ?
-  [968] = "%.4f", -- ?
-  [969] = "%.1f", -- CONF Display
-  [970] = "%.4f", -- ?
-  [971] = "%.4f", -- ?
-  [972] = "%.1f", -- LED SQL Display
-  [973] = "%.4f", -- ?
-  [974] = "%.4f", -- LED GR Display
-  [975] = "%.4f", -- ?
-  [976] = "%.4f", -- ?
-  [977] = "%.4f", -- ?
-  [978] = "%.4f", -- ?
 }
 
 -----------------------------
@@ -835,11 +809,10 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 			if (from2 ~= nill) then
 				to1, to2 = lPCAUR:find("%c", from2+2)
 				if (to1 ~= nil) then
-          tmpStr = lPCAUR:sub(from2+1, to1-1)
-          if (tmpStr:sub(2,2) == '-') then
+					lPCA_UR[lIndex] = lPCAUR:sub(from2+1, to1-1)
+          if (lPCA_UR[lIndex]:len() > 3) then
+            -- ExportScript.Tools.WriteToLog("cleanup UR "..string.format("%s", lPCA_UR[lIndex]))
             lPCA_UR[lIndex] = ""
-          else
-            lPCA_UR[lIndex] = tmpStr
           end
 				end
 			end
@@ -876,11 +849,10 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 			if (from2 ~= nill) then
 				to1, to2 = lPCABR:find("%c", from2+2)
 				if (to1 ~= nil) then
-          tmpStr = lPCABR:sub(from2+1, to1-1)
-          if (tmpStr:sub(2,2) == '-') then
+					lPCA_BR[lIndex] = lPCABR:sub(from2+1, to1-1)
+          if (lPCA_BR[lIndex]:len() > 3) then
+            -- ExportScript.Tools.WriteToLog("cleanup BR "..string.format("%s", lPCA_BR[lIndex]))
             lPCA_BR[lIndex] = ""
-          else
-            lPCA_BR[lIndex] = tmpStr
           end
 				end
 			end
