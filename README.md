@@ -2,7 +2,7 @@
 Mirage 2000C profile for use with DCS interface on a Stream Deck
 (c) Blue Storm & Bearcat 2021-2022
 
-BETA version 1.1
+BETA version 1.1 coming shortly !!
 
 a Mirage 2000 profile to be used with DCS Interface for Streamdeck
 
