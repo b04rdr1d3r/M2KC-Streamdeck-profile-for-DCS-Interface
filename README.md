@@ -9,7 +9,7 @@ a Mirage 2000 profile to be used with DCS Interface for Streamdeck
 what you need:
 - DCS 2.7.x
 - the Mirage 2000C module by Razbam
-- a streamdeck (the standard 15 buttos one or larger)
+- a streamdeck (the standard 15 buttons one or larger)
 - DCS Interface ==> https://github.com/charlestytler/streamdeck-dcs-interface
 - DCS Interface requires DCS Exports Scripts (https://github.com/s-d-a/DCS-ExportScripts)
 - DCS Export Scripts M-2000 module is not working properly, until this is corrected, you'll need to swap this my version with the one supplied by DCS Export Scipts (NOTA BENE : there are a few add-ons, bug corrections in that version)
