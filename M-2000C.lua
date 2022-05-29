@@ -1,7 +1,9 @@
 -- Mirage M-2000C
+-- for DCS Export Scripts
+-- initial version by s-d-a with additions and update by Blue Storm
 
 ExportScript.FoundDCSModule = true
-ExportScript.Version.M2000C = "1.2.1"
+ExportScript.Version.M2000C = "2.0.0"
 
 
 -----------------------------
@@ -640,9 +642,11 @@ ExportScript.ConfigArguments =
 	[666] = "%.1f",	--Parking Brake Lever
 	[807] = "%.1f",	--Nose Wheel Steering / IFF
 
-	-- TAF-JVN
+	-- Télé Affichage TAF - GCI
 	[968] = "%.2f",	--EVF Channel selector
 	[970] = "%.2f",	--EVF Panel Test
+
+  -- Jumelles de Vision Nocturnes (JNV - NVG)
 	[672] = "%.1f",	--NVG lights Filter Switch
 
 
@@ -738,43 +742,6 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	-- ECM Mode Switch
 	-- [194] = "%.1f",	--ECM Box Mode Switch
 	local lECM_On = (mainPanelDevice:get_argument_value(194) > 0.0 and true or false)
-
---  ECM BOX modified in recent versions of M2000C module cockpit so display functions have been removed
---[[
-	-- ECM_CHF
-	local lECM_CHF = ExportScript.Tools.getListIndicatorValue(3)
-	if ExportScript.Config.Debug then
-		ExportScript.Tools.WriteToLog('lECM_CHF : '..ExportScript.Tools.dump(lECM_CHF))
-	end
-
-	if lECM_On and lECM_CHF ~= nil and lECM_CHF.text_ECM_CHF ~= nil then
-		-- string with max 3 charachters
-		ExportScript.Tools.SendData(2001, string.format("%s", lECM_CHF.text_ECM_CHF))
-
-		if ExportScript.Config.Debug then
-			ExportScript.Tools.WriteToLog('2001: '..ExportScript.Tools.dump(lECM_CHF.text_ECM_CHF))
-		end
-	else
-		ExportScript.Tools.SendData(2001, " ")
-	end
-
-	-- ECM_FLR
-	local lECM_FLR = ExportScript.Tools.getListIndicatorValue(4)
-	if ExportScript.Config.Debug then
-		ExportScript.Tools.WriteToLog('lECM_FLR : '..ExportScript.Tools.dump(lECM_FLR))
-	end
-
-	if lECM_On and lECM_FLR ~= nil and lECM_FLR.text_ECM_FLR ~= nil then
-		-- string with max 2 charachters
-		ExportScript.Tools.SendData(2002, string.format("%s", lECM_FLR.text_ECM_FLR))
-
-		if ExportScript.Config.Debug then
-			ExportScript.Tools.WriteToLog('2002: '..ExportScript.Tools.dump(lECM_FLR.text_ECM_FLR))
-		end
-	else
-		ExportScript.Tools.SendData(2002, " ")
-	end
-]]
 
 	-- FUEL
 	local lFUEL = ExportScript.Tools.getListIndicatorValue(3)
@@ -965,117 +932,6 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	end
 
 	local lPCNUR = ExportScript.Tools.getListIndicatorValue(9)
-  --[[ old code valid for 2.5.x
-  --    SubLeftTop    SubRightTop   SubLeftBottom SubRightBottom MainLeft     MainRight
-	local lPCN_sub_L_T, lPCN_sub_R_T, lPCN_sub_L_B, lPCN_sub_R_B,  lPCN_main_L, lPCN_main_R = "", "", "", "", "", ""
-
-  -- das untere durch solche aufrufe ersetzen
-	if lPCNUR.text_PCN_R_INT ~= nil then
-		lPCN_main_R = lPCNUR.text_PCN_R_INT
-	end
-	if lPCNUR.text_PCN_L_INT ~= nil then
-		lPCN_main_L = lPCNUR.text_PCN_L_INT
-	end
-	if lPCNUR.text_PCN_L_TR ~= nil then
-		lPCN_main_L = lPCNUR.text_PCN_L_TR
-	end
-	if lPCNUR.text_PCN_NORD ~= nil then
-		lPCN_sub_L_T = lPCNUR.text_PCN_NORD
-	end
-	if lPCNUR.text_PCN_EST ~= nil then
-		lPCN_sub_R_T = lPCNUR.text_PCN_EST
-	end
-	if lPCNUR.text_PCN_SUD ~= nil then
-		lPCN_sub_L_B = lPCNUR.text_PCN_SUD
-	end
-	if lPCNUR.text_PCN_OUEST ~= nil then
-		lPCN_sub_R_B = lPCNUR.text_PCN_OUEST
-	end
-	if lPCNUR.text_PCN_L_MRQ_LAT ~= nil then
-		lPCN_main_L = lPCNUR.text_PCN_L_MRQ_LAT
-	end
-	if lPCNUR.text_PCN_R_MRQ_LON ~= nil then
-		lPCN_main_R = lPCNUR.text_PCN_R_MRQ_LON
-	end
-	if lPCNUR.text_PCN_PLUS_R ~= nil then
-		lPCN_sub_R_T = lPCN_sub_R_T..lPCNUR.text_PCN_PLUS_R
-	end
-	if lPCNUR.text_PCN_PLUS_L ~= nil then
-		lPCN_sub_L_T = lPCN_sub_L_T..lPCNUR.text_PCN_PLUS_L
-	end
-	if lPCNUR.text_PCN_MOINS_L ~= nil then
-		lPCN_sub_L_B = lPCN_sub_L_B..lPCNUR.text_PCN_MOINS_L
-	end
-	if lPCNUR.text_PCN_MOINS_R ~= nil then
-		lPCN_sub_R_B = lPCN_sub_R_B..lPCNUR.text_PCN_MOINS_R
-	end
-	if lPCNUR.text_PCN_L_DR ~= nil then
-		lPCN_main_L = lPCNUR.text_PCN_L_DR
-	end
-	if lPCNUR.text_PCN_R_DEG ~= nil then
-		lPCN_main_R = lPCNUR.text_PCN_R_DEG
-	end
-	if lPCNUR.text_PCN_L_DEG ~= nil then
-		lPCN_main_L = lPCNUR.text_PCN_L_DEG
-	end
-	if lPCNUR.text_PCN_RDE ~= nil then
-		lPCN_main_R = lPCNUR.text_PCN_RDE
-	end
-	if lPCNUR.text_PCN_LDE ~= nil then
-		lPCN_main_L = lPCNUR.text_PCN_LDE
-	end
-	if lPCNUR.text_PCN_L_LG ~= nil then
-		lPCN_main_L = lPCNUR.text_PCN_L_LG
-	end
-	if lPCNUR.text_PCN_R_LG ~= nil then
-		lPCN_main_R = lPCNUR.text_PCN_R_LG
-	end
-	if lPCNUR.text_PCN_R_TD ~= nil then
-		lPCN_main_R = lPCNUR.text_PCN_R_TD
-	end
-	if lPCNUR.text_PCN_L_TD ~= nil then
-		lPCN_main_L = lPCNUR.text_PCN_L_TD
-	end
-	if lPCNUR.text_PCN_R_ASTS ~= nil then
-		lPCN_main_R = lPCNUR.text_PCN_R_ASTS
-	end
-	if lPCNUR.text_PCN_L_ACLASS ~= nil then
-		lPCN_main_L = lPCNUR.text_PCN_L_ACLASS
-	end
-	if lPCNUR.text_PCN_L_ACTMR ~= nil then
-		lPCN_main_L = lPCN_main_L.."   "..lPCNUR.text_PCN_L_ACTMR
-	end
-	if lPCNUR.text_PCN_MSG ~= nil then
-		lPCN_main_L = lPCNUR.text_PCN_MSG
-	end
-
-  if ExportScript.Config.Debug then
-     -- string with max 1 charachters
-    ExportScript.Tools.WriteToLog("2024: "..string.format("%s", lPCN_sub_L_T))
-    ExportScript.Tools.WriteToLog("2025: "..string.format("%s", lPCN_sub_R_T))
-    ExportScript.Tools.WriteToLog("2026: "..string.format("%s", lPCN_sub_L_B))
-    ExportScript.Tools.WriteToLog("2027: "..string.format("%s", lPCN_sub_R_B))
-     -- string with max 9 charachters
-    ExportScript.Tools.WriteToLog("2028: "..string.format("%s", lPCN_main_L))
-    ExportScript.Tools.WriteToLog("2029: "..string.format("%s", lPCN_main_R))
-  end
-
-  lPCN_main_L = lPCN_main_L:gsub(":", "¦")
-  lPCN_main_R = lPCN_main_R:gsub(":", "¦")
-  lPCN_main_L = lPCN_main_L:sub(0, 10)
-  lPCN_main_R = lPCN_main_R:sub(0, 10)
-  lPCN_sub_L_T = lPCN_sub_L_T:sub(0, 2)
-  lPCN_sub_R_T = lPCN_sub_R_T:sub(0, 2)
-  lPCN_sub_L_B = lPCN_sub_L_B:sub(0, 2)
-  lPCN_sub_R_B = lPCN_sub_R_B:sub(0, 2)
-
-  ExportScript.Tools.SendData(2024, string.format("%s", lPCN_sub_L_T))
-  ExportScript.Tools.SendData(2025, string.format("%s", lPCN_sub_R_T))
-  ExportScript.Tools.SendData(2026, string.format("%s", lPCN_sub_L_B))
-  ExportScript.Tools.SendData(2027, string.format("%s", lPCN_sub_R_B))
-  ExportScript.Tools.SendData(2028, string.format("%s", lPCN_main_L))
-  ExportScript.Tools.SendData(2029, string.format("%s", lPCN_main_R))
-  ]]
 
   local lPCN_sub_L_T, lPCN_sub_R_T, lPCN_sub_L_B, lPCN_sub_R_B, lPCN_main_L, lPCN_main_R, lPCN_mask_L, lPCN_mask_R = "", "", "", "", "", "", "", ""
   -- map N and S
@@ -1168,33 +1024,7 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
   ExportScript.Tools.SendData(2056, string.format("%s", lPCN_main_L_D))
   ExportScript.Tools.SendData(2057, string.format("%s", lPCN_main_R_D))
 
-	-- PCN_BR (Naviagation, wahrscheinlich die Wegpunktanzeige)
-  --[[ OLD CODE BELOW for 2.5.6
-	local lPCNBR = list_indication(10)
-	if ExportScript.Config.Debug then
-		ExportScript.Tools.WriteToLog('lPCNBR : '..ExportScript.Tools.dump(lPCNBR))
-	end
-
-	local to1, to2, from1, from2, lPCN_BR1, lPCN_BR2 = nil, nil, nil, nil, "", ""
-	to1, to2 = lPCNBR:find("PCN_BR")
-	if (to1 ~= nil) then
-		from1, from2 = lPCNBR:find("text_PCN_BR1%c")
-		if (from2 ~= nil) then
-			to1, to2 = lPCNBR:find("%c", from2+2)
-			if (to1 ~= nil) then
-				lPCN_BR1 = lPCNBR:sub(from2+1, to1-1)
-			end
-		end
-
-		from1, from2 = lPCNBR:find("text_PCN_BR2%c", to2)
-		if (from2 ~= nil) then
-			to1, to2 = lPCNBR:find("%c", from2+2)
-			if (to1 ~= nil) then
-				lPCN_BR2 = lPCNBR:sub(from2+1, to1-1)
-			end
-		end
-	end
-  ]]
+	-- PCN_BR (Poste de Commande Navigation)
   -- NEW CODE below for 2.7
   local lPCNBR = list_indication(10)
   if ExportScript.Config.Debug then
@@ -1246,6 +1076,14 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendData(2033, digits[2])
 	ExportScript.Tools.SendData(2034, digits[3])
 	ExportScript.Tools.SendData(2035, digits[4])
+
+-- EVF Channel post processing to get a displayable number
+--local EVF_Channels = {[0.00]=" 1", [0.05]=" 2", [0.10]=" 3", [0.15]=" 4", [0.20]=" 5", [0.25]=" 6", [0.30]=" 7", [0.35]=" 8", [0.40]=" 9", [0.45]="10", [0.50]="11", [0.55]="12", [0.60]="13", [0.65]="14", [0.70]="15", [0.75]="16", [0.80]="17", [0.85]="18", [0.90]="19", [0.95]="20"}
+  EVF_Channel = string.format("%02d", (mainPanelDevice:get_argument_value(968) * 20) + 1)
+  ExportScript.Tools.SendData(2068, EVF_Channel)
+	if ExportScript.Config.Debug then
+    ExportScript.Tools.WriteToLog("2068: "..string.format("%s", EVF_Channel))
+  end
 
 -- VOR ILS
 --[[
@@ -1383,29 +1221,6 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendDataDAC("2000", ExportScript.Tools.RoundFreqeuncy((UHF_RADIO:get_frequency()/1000000))) -- ExportScript.Tools.RoundFreqeuncy(frequency (MHz|KHz), format ("7.3"), PrefixZeros (false), LeastValue (0.025))
 	]]
 
--- ECM BOX modified in recent versions of M2000C module cockpit so display functions have been removed
---[[
-	-- ECM_CHF
-	local lECM_CHF = ExportScript.Tools.getListIndicatorValue(3)
-
-	if lECM_CHF ~= nil and lECM_CHF.text_ECM_CHF ~= nil then
-		-- string with max 3 charachters
-		ExportScript.Tools.SendDataDAC(2001, string.format("%s", lECM_CHF.text_ECM_CHF))
-	else
-		ExportScript.Tools.SendDataDAC(2001, "-")
-	end
-
-	-- ECM_FLR
-	local lECM_FLR = ExportScript.Tools.getListIndicatorValue(4)
-
-	if lECM_FLR ~= nil and lECM_FLR.text_ECM_FLR ~= nil then
-		-- string with max 2 charachters
-		ExportScript.Tools.SendDataDAC(2002, string.format("%s", lECM_FLR.text_ECM_FLR))
-	else
-		ExportScript.Tools.SendDataDAC(2002, "-")
-	end
-]]
-
   -- FUEL
 	local lFUEL = ExportScript.Tools.getListIndicatorValue(3)
 
@@ -1511,7 +1326,4 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 ]]
 end
 
-
------------------------------
---     Custom functions    --
------------------------------
+-- end script
