@@ -196,6 +196,8 @@ ExportScript.ConfigEveryFrameArguments =
 	[353] = "%.4f",	--Drum 0X0
 	[354] = "%.4f",	--Drum 00X
 
+  [357] = "%.1f", --intercom
+
 -- Fuel indicator
 	[358] = "%.4f",	--v-needle left
 	[359] = "%.4f",	--v-needle right
