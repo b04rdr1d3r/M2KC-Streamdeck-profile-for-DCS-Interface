@@ -2,7 +2,7 @@
 Mirage 2000C profile for use with DCS interface on a Stream Deck
 (c) Blue Storm & Bearcat 2021-2022
 
-BETA version 1.1 coming shortly !!
+BETA version 1.1 !!
 
 a Mirage 2000 profile to be used with DCS Interface for Streamdeck
 
@@ -17,7 +17,8 @@ what you need:
 Once you have all DCS Export Scripts and DCS Interface running, just upload the profile and off you go...
 
 What's new in this version:
-many additions brought to you by Bearcat + some others by Blue Storm!
+startup commands for anemo, horizon, audio warning added. commands added also for the parking brake
+new PCA icons and displays more alike to the real thing ;-)
 
 What works:
 Gear lights / FBW switch
