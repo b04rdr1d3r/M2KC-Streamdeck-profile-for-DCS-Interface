@@ -1,9 +1,9 @@
 -- Mirage M-2000C
 -- for DCS Export Scripts
--- initial version by s-d-a with additions and update by Blue Storm
+-- initial version by s-d-a with additions and update by Blue Storm + Bearcat
 
 ExportScript.FoundDCSModule = true
-ExportScript.Version.M2000C = "2.0.0"
+ExportScript.Version.M2000C = "2.1.0"
 
 
 -----------------------------
@@ -176,7 +176,9 @@ ExportScript.ConfigEveryFrameArguments =
 	[337] = "%.4f",	--Drum 0X00
 	[338] = "%.4f",	--Drum 00X0
 	[339] = "%.4f",	--Drum 000X
-	[342] = "%.4f",	--Compass rose
+  [340] = "%.4f",	--HSI Heading Selector
+  [341] = "%.1f",	--HSI Mode Selector Switch
+  [342] = "%.4f",	--Compass rose
 	[344] = "%.1f",	--HSI Flag 1
 	[345] = "%.1f",	--HSI Flag 2
 	[346] = "%.1f",	--HSI Flag CAP
@@ -195,8 +197,7 @@ ExportScript.ConfigEveryFrameArguments =
 	[352] = "%.4f",	--Drum X00
 	[353] = "%.4f",	--Drum 0X0
 	[354] = "%.4f",	--Drum 00X
-
-  [357] = "%.1f", --intercom
+	[357] = "%.1f",	--Intercom
 
 -- Fuel indicator
 	[358] = "%.4f",	--v-needle left
@@ -290,6 +291,11 @@ ExportScript.ConfigEveryFrameArguments =
 	[511] = "%.1f",	-- „HYD“
 	[512] = "%.1f",	-- Red
 	[513] = "%.1f",	-- GREEN
+
+
+-- TRIM
+	[508] = "%.1f",	--	Trim mode
+	[509] = "%.1f",	--	Trim direction
 
 -- LOX
 	[518] = "%.4f",	--	needle
@@ -473,10 +479,6 @@ ExportScript.ConfigArguments =
 	[460] = "%.1f",	--Intake slats Operation Switch
 	[461] = "%.1f",	--Intake cones Operation Switch
 
--- HSI
-	[340] = "%.4f",	--HSI Heading Selector
-	[341] = "%.1f",	--HSI Mode Selector Switch
-
 -- PELLES, SOURIES AND BECS
 	[462] = "%.1f",	--Slats Operation Switch
 	[395] = "%.1f",	--Hydraulic System Selector
@@ -595,7 +597,7 @@ ExportScript.ConfigArguments =
 	[474] = "%.1f",	--Secondary Oil Control Switch
 	[475] = "%.1f",	--Engine Emergency Control Cover
 	[476] = "%.1f",	--Engine Emergency Control Switch
-
+	[470] = "%.1f",	--Radar WOW Emitter Authorize Switch
 	-- Radio Panel
 	[429] = "%.1f",	--UHF Power 5W/25W Switch
 	[430] = "%.1f",	--UHF SIL Switch
@@ -1206,6 +1208,99 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
   end
   lEngine_percent = string.format("%1.0f", mainPanelDevice:get_argument_value(369) * 100) .. "%"
   ExportScript.Tools.SendData(2058, lEngine_percent)
+
+  -- HSI indicator cleaned up parameters
+  digits = {}
+  digits[1] = mainPanelDevice:get_argument_value(336) * 10
+  digits[2] = mainPanelDevice:get_argument_value(337) * 10
+  digits[3] = mainPanelDevice:get_argument_value(338) * 10
+  digits[4] = mainPanelDevice:get_argument_value(339) * 10
+  for i = 1, 4, 1
+  do
+     if math.floor(digits[i] + 0.5) >= 10 then
+       digits[i] = 0
+     else
+       digits[i] = math.floor(digits[i] + 0.5)
+     end
+  end
+  local lHSI_X000 = ""
+  local lHSI_0X00 = ""
+  local lHSI_00X0 = ""
+  local lHSI_000X = ""
+  lHSI_X000 = string.format("%1d", digits[1])
+  if string.len(lHSI_X000) > 1 then
+    lHSI_X000 = string.sub(lHSI_X000, -1)
+  end
+  lHSI_0X00 = string.format("%1d", digits[2])
+  if string.len(lHSI_0X00) > 1 then
+    lHSI_0X00 = string.sub(lHSI_0X00, -1)
+  end
+  lHSI_00X0 = string.format("%1d", digits[3])
+  if string.len(lHSI_00X0) > 1 then
+    lHSI_00X0 = string.sub(lHSI_00X0, -1)
+  end
+  if string.len(string.format("%1d", digits[4])) > 2 then
+    lHSI_000X = '.' .. string.sub(string.format("%1d", digits[4], -1))
+  else
+    lHSI_000X = '.' .. string.format("%1d", digits[4])
+  end
+  ExportScript.Tools.SendData(2336, lHSI_X000)
+  ExportScript.Tools.SendData(2337, lHSI_0X00)
+  ExportScript.Tools.SendData(2338, lHSI_00X0)
+  ExportScript.Tools.SendData(2339, lHSI_000X)
+  ExportScript.Tools.SendData(3339, lHSI_X000..lHSI_0X00..lHSI_00X0..lHSI_000X)
+  if ExportScript.Config.Debug then
+    ExportScript.Tools.WriteToLog('2336: '..ExportScript.Tools.dump(string.format("%1.0f", mainPanelDevice:get_argument_value(336) * 10)))
+    ExportScript.Tools.WriteToLog('2337: '..ExportScript.Tools.dump(string.format("%1.0f", mainPanelDevice:get_argument_value(337) * 10)))
+    ExportScript.Tools.WriteToLog('2338: '..ExportScript.Tools.dump(string.format("%1.0f", mainPanelDevice:get_argument_value(338) * 10)))
+    ExportScript.Tools.WriteToLog('2339: '..ExportScript.Tools.dump(string.format("%1.0f", mainPanelDevice:get_argument_value(339) * 10)))
+  end
+
+  local lHSI_Heading = 0
+  local lHSI_Needle = 0
+  lHSI_Heading = mainPanelDevice:get_argument_value(318) * 360
+  lHSI_Needle = (mainPanelDevice:get_argument_value(334) * 360) + lHSI_Heading
+  if lHSI_Needle > 360 then
+    lHSI_Needle = lHSI_Needle - 360
+  end
+  ExportScript.Tools.SendData(2318, string.format("%03d", lHSI_Heading))
+  ExportScript.Tools.SendData(2334,  string.format("%03d", lHSI_Needle))
+  if ExportScript.Config.Debug then
+    ExportScript.Tools.WriteToLog('2318: '..ExportScript.Tools.dump(string.format("%03d", lHSI_Heading)))
+    ExportScript.Tools.WriteToLog('2334: '..ExportScript.Tools.dump(string.format("%03d", lHSI_Heading)))
+  end
+
+  -- Altitude indicator cleaned up parameters
+  digits = {}
+  digits[1] = math.floor(mainPanelDevice:get_argument_value(306) * 10 + 0.5)
+  digits[2] = math.floor(mainPanelDevice:get_argument_value(307) * 10 + 0.5)
+  local lAngel = ""
+  local lFeet = ""
+  local lAltitude = ""
+  lAngel = string.format("%01d", digits[1]) .. string.format("%01d", digits[2])
+  lFeet = string.sub("000" .. string.format("%03d", mainPanelDevice:get_argument_value(305) * 1000), -3)
+  lAltitude = lAngel .. lFeet
+  ExportScript.Tools.SendData(2306, lAngel)
+  ExportScript.Tools.SendData(2305, lFeet)
+  ExportScript.Tools.SendData(2307, lAltitude)
+  if ExportScript.Config.Debug then
+    ExportScript.Tools.WriteToLog('2306: '..ExportScript.Tools.dump(lAngel))
+    ExportScript.Tools.WriteToLog('2305: '..ExportScript.Tools.dump(lFeet))
+    ExportScript.Tools.WriteToLog('2307: '..ExportScript.Tools.dump(lAltitude))
+  end
+
+  -- mach meter and tachymeter
+  local lTachy = ""
+  local lMach = ""
+  lTachy = string.format("%4d", mainPanelDevice:get_argument_value(303) * 1000)
+  lMach = string.format("%1.2f", mainPanelDevice:get_argument_value(304) * 10)
+  ExportScript.Tools.SendData(2303, lTachy)
+  ExportScript.Tools.SendData(2304, lMach)
+  if ExportScript.Config.Debug then
+    ExportScript.Tools.WriteToLog('2303 '..ExportScript.Tools.dump(lTachy))
+    ExportScript.Tools.WriteToLog('2304: '..ExportScript.Tools.dump(lMach))
+  end
+
 
   ExportScript.Tools.FlushData()
 end
