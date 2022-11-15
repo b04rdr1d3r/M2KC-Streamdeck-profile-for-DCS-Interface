@@ -3,7 +3,7 @@
 -- initial version by s-d-a with additions and update by Blue Storm + Bearcat
 
 ExportScript.FoundDCSModule = true
-ExportScript.Version.M2000C = "2.1.0"
+ExportScript.Version.M2000C = "2.1.1"
 
 
 -----------------------------
@@ -414,6 +414,8 @@ ExportScript.ConfigArguments =
 	[203] = "%.1f",	--HUD Decluter Switch
 	[204] = "%.1f",	--HUD Altimeter Selector Switch
 	[205] = "%.1f",	--Radar Altimeter Power Switch
+	[206] = "%.1f",	--Auxiliary Gunsight
+	[207] = "%.1f",	--Auxiliary Gunsight Deflection
 	[208] = "%.1f",	--Gun AG Reticle Selector
 	[209] = "%.1f",	--Gun Target Wingspan Selector
 	[210] = "%.1f",	--HUD Clear Switch
@@ -507,7 +509,7 @@ ExportScript.ConfigArguments =
 	[602] = "%.1f",	--Radar IFF Code-3 Selector
 	[603] = "%.1f",	--Radar IFF Code-2 Selector
 	[604] = "%.1f",	--Radar IFF Code-1 Selector
-	[709] = "%.1f",	--Radar PRF Selector
+	[109] = "%.1f",	--Radar PRF Selector
 	[710] = "%.1f",	--TDC Mode
 
 -- ELECTRICAL PANEL
@@ -669,7 +671,7 @@ ExportScript.ConfigArguments =
 	[314] = "%.1f",	--ADI Cage Lever
 	[315] = "%.1f",	--ADI Backlight Switch
 	[325] = "%.1f",	--Backup ADI Cage
-	--[328] = "%.4f",	--Backup ADI Pitch Adjust Knob {-1.0,1.0} in 0.1 steps
+	[328] = "%.4f",	--Backup ADI Pitch Adjust Knob {-1.0,1.0} in 0.1 steps
 -- Center console IFF
 	[383] = "%.1f",	--Ident Power Switch {-1.0,0.0,1.0}
 	[384] = "%.1f",	--Mode-1 Switch
@@ -1292,7 +1294,7 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
   -- mach meter and tachymeter
   local lTachy = ""
   local lMach = ""
-  lTachy = string.format("%4d", mainPanelDevice:get_argument_value(303) * 1000)
+  lTachy = string.format("%04d", mainPanelDevice:get_argument_value(303) * 1000)
   lMach = string.format("%1.2f", mainPanelDevice:get_argument_value(304) * 10)
   ExportScript.Tools.SendData(2303, lTachy)
   ExportScript.Tools.SendData(2304, lMach)
@@ -1300,6 +1302,15 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
     ExportScript.Tools.WriteToLog('2303 '..ExportScript.Tools.dump(lTachy))
     ExportScript.Tools.WriteToLog('2304: '..ExportScript.Tools.dump(lMach))
   end
+
+ -- Pitch angle
+  local PAngle = ""
+  PAngle = string.format("%04d", mainPanelDevice:get_argument_value(316) * 100)
+  ExportScript.Tools.SendData(2316, PAngle)
+  if ExportScript.Config.Debug then
+    ExportScript.Tools.WriteToLog('2316 '..ExportScript.Tools.dump(PAngle))
+  end
+
 
 
   ExportScript.Tools.FlushData()
