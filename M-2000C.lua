@@ -3,7 +3,7 @@
 -- initial version by s-d-a with additions and update by Blue Storm + Bearcat
 
 ExportScript.FoundDCSModule = true
-ExportScript.Version.M2000C = "2.1.1"
+ExportScript.Version.M2000C = "2.1.2"
 
 
 -----------------------------
@@ -382,17 +382,17 @@ ExportScript.ConfigEveryFrameArguments =
 	[622] = "%.4f",	--	Drum 00X right	(0;1-9;0)
 
 
-	[632] = "%.1f",	--	Taster mit Warnlampe “C”
-	[634] = "%.1f",	--	Taster mit Warnlampe “F”
+	[632] = "%.1f",	--	Bouton avec voyant "C"
+	[634] = "%.1f",	--	Bouton avec voyant "F"
 
 -- Panel lights
-	[720] = "%.4f",	--	MIP Aufleuchte, red
-	[721] = "%.4f",	--	MIP Hintergrundbeleuchtung, red
-	[722] = "%.4f",	-- 	MIP Aufleuchte, weiß
-	[723] = "%.4f",	--	Linke und rechte Seitenpanels Hintergrundbeleuchtung, red
-	[724] = "%.4f",	--	Seitenpanels Aufleuchten, red (links, rechts)
-	[726] = "%.4f",	--	Warnlampen Dimmer
-	[727] = "%.4f",	--	Warnlampen Dimmer (Seitenpanels?)
+	[720] = "%.4f",	--	Flash MIP, rouge
+	[721] = "%.4f",	--	Rétroéclairage MIP, rouge
+	[722] = "%.4f",	-- 	Flash MIP, blanc
+	[723] = "%.4f",	--	Rétroéclairage des panneaux latéraux gauche et droit, rouge
+	[724] = "%.4f",	--	Eclairage des panneaux latéraux, rouge (gauche, droite)
+	[726] = "%.4f",	--	variateur de lampe d'avertissement
+	[727] = "%.4f",	--	variateur de lampe d'avertissement (panneaux latéraux)
 
 }
 
@@ -481,7 +481,7 @@ ExportScript.ConfigArguments =
 	[460] = "%.1f",	--Intake slats Operation Switch
 	[461] = "%.1f",	--Intake cones Operation Switch
 
--- PELLES, SOURIES AND BECS
+-- PELLES, SOURIS AND BECS
 	[462] = "%.1f",	--Slats Operation Switch
 	[395] = "%.1f",	--Hydraulic System Selector
 	[396] = "%.1f",	--Pedal Adjust Lever
@@ -545,8 +545,12 @@ ExportScript.ConfigArguments =
 
 -- PSM
 	[627] = "%.1f",	--INS Mode Selector
+	[628] = "%.1f",	--MIP Data Slot
 	[629] = "%.1f",	--INS Operational Mode
 	[665] = "%.1f",	--INS Auxiliary Heading/Horizon
+	[673] = "%.1f", --DTC Cartridge Position
+	[674] = "%.1f", --DTC Cartridge Presence
+
 
 -- EW PANEL
 	[228] = "%.4f",	--RWR Light Brightnes Control
@@ -648,11 +652,11 @@ ExportScript.ConfigArguments =
 	[666] = "%.1f",	--Parking Brake Lever
 	[807] = "%.1f",	--Nose Wheel Steering / IFF
 
-	-- Télé Affichage TAF - GCI
+-- Télé Affichage TAF - GCI
 	[968] = "%.2f",	--EVF Channel selector
 	[970] = "%.2f",	--EVF Panel Test
 
-  -- Jumelles de Vision Nocturnes (JNV - NVG)
+-- Jumelles de Vision Nocturnes (JNV - NVG)
 	[672] = "%.1f",	--NVG lights Filter Switch
 
 
@@ -1311,10 +1315,35 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
     ExportScript.Tools.WriteToLog('2316 '..ExportScript.Tools.dump(PAngle))
   end
 
+  -- Jauge and DETOT
+  local lJAUGE = "0000"
+  digits = {}
+  digits[1] = math.floor(mainPanelDevice:get_argument_value(349) * 10 + 0.5)
+  digits[2] = math.floor(mainPanelDevice:get_argument_value(350) * 10 + 0.5)
+  digits[3] = math.floor(mainPanelDevice:get_argument_value(351) * 100 + 0.5)
+  lJAUGE = string.format("%01d", digits[1]) .. string.format("%01d", digits[2]) .. string.format("%02d", digits[3])
+  ExportScript.Tools.SendData(2349, lJAUGE)
+  if ExportScript.Config.Debug then
+    ExportScript.Tools.WriteToLog('2349 '..ExportScript.Tools.dump(lJAUGE))
+  end
+  local lDETOT = "0000"
+  digits = {}
+  digits[1] = math.floor(mainPanelDevice:get_argument_value(352) * 10 + 0.5)
+  digits[2] = math.floor(mainPanelDevice:get_argument_value(353) * 10 + 0.5)
+  digits[3] = math.floor(mainPanelDevice:get_argument_value(354) * 100 + 0.5)
+  lDETOT = string.format("%01d", digits[1]) .. string.format("%01d", digits[2]) .. string.format("%02d", digits[3])
+  ExportScript.Tools.SendData(2352, lDETOT)
+  if ExportScript.Config.Debug then
+    ExportScript.Tools.WriteToLog('2352 '..ExportScript.Tools.dump(lDETOT))
+  end
+
 
 
   ExportScript.Tools.FlushData()
 end
+
+
+
 
 function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 	--[[
@@ -1406,6 +1435,26 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 	end
 	ExportScript.Tools.SendDataDAC(2022, string.format("%s", lPPA1))
 	ExportScript.Tools.SendDataDAC(2023, string.format("%s", lPPA2))
+
+  -- IFF Digits
+  local IFF_1 = 0
+  local IFF_2 = 0
+  local IFF_3 = 0
+  local IFF_4 = 0
+  IFF_1 = string.format("%d", mainPanelDevice:get_argument_value(601) * 10)
+  IFF_2 = string.format("%d", mainPanelDevice:get_argument_value(602) * 10)
+  IFF_3 = string.format("%d", mainPanelDevice:get_argument_value(603) * 10)
+  IFF_4 = string.format("%d", mainPanelDevice:get_argument_value(604) * 10)
+  ExportScript.Tools.SendDataDAC(2601, IFF_1)
+  ExportScript.Tools.SendDataDAC(2602, IFF_2)
+  ExportScript.Tools.SendDataDAC(2603, IFF_3)
+  ExportScript.Tools.SendDataDAC(2604, IFF_4)
+  if ExportScript.Config.Debug then
+    ExportScript.Tools.WriteToLog('2601 '..ExportScript.Tools.dump(IFF_1))
+    ExportScript.Tools.WriteToLog('2602 '..ExportScript.Tools.dump(IFF_2))
+    ExportScript.Tools.WriteToLog('2603 '..ExportScript.Tools.dump(IFF_3))
+    ExportScript.Tools.WriteToLog('2604 '..ExportScript.Tools.dump(IFF_4))
+  end
 
 	-- send data
 	ExportScript.Tools.FlushDataDAC(#ExportScript.Config.DAC)
