@@ -110,7 +110,7 @@ ExportScript.ConfigEveryFrameArguments =
 -- div. lights
  	[373] = "%.1f",	--Afterburner light
 	[376] = "%.1f",	--starter light
-	[198] = "%.1f",	--tranfere
+	[198] = "%.1f",	--tranfer
 	[199] = "%.1f",	--master-warning
 	[200] = "%.1f",	--master-caution
 -- INSTRUMENTS -------------------------------------------
@@ -176,13 +176,13 @@ ExportScript.ConfigEveryFrameArguments =
 	[337] = "%.4f",	--Drum 0X00
 	[338] = "%.4f",	--Drum 00X0
 	[339] = "%.4f",	--Drum 000X
-  [340] = "%.4f",	--HSI Heading Selector
-  [341] = "%.1f",	--HSI Mode Selector Switch
-  [342] = "%.4f",	--Compass rose
+    [340] = "%.4f",	--HSI Heading Selector
+    [341] = "%.1f",	--HSI Mode Selector Switch
+    [342] = "%.4f",	--Compass rose
 	[344] = "%.1f",	--HSI Flag 1
 	[345] = "%.1f",	--HSI Flag 2
 	[346] = "%.1f",	--HSI Flag CAP
-	[341] = "%.1f",	--HSI Mode
+	--[341] = "%.1f",	--HSI Mode
 	[343] = "%.1f",	--DME Off Flag
 
 -- ACC indicator
@@ -248,7 +248,7 @@ ExportScript.ConfigEveryFrameArguments =
 	[413] = "%.1f",	-- 	„FREIN“
 	[414] = "%.1f",	-- 	„Cross“
 	[415] = "%.1f",	-- 	„SPAD“
-	[416] = "%.1f",	-- 	Rote Warnlamp unter „BIP“
+	[416] = "%.1f",	-- 	voyant rouge „BIP“
 	[417] = "%.1f",	-- 	Left Gear ?, grüne Warnlampen
 	[418] = "%.1f",	-- 	Nose Gear ?
 	[419] = "%.1f",	-- 	Right Gear ?
@@ -283,8 +283,8 @@ ExportScript.ConfigEveryFrameArguments =
 
 -- Left consule Lamps
 	[490] = "%.1f",	-- „VAL”
-	[492] = "%.1f",	-- „A“ Kontrolllampe  mittleres Panel
-	[494] = "%.1f",	-- „DEC“ Kontrollampe
+	[492] = "%.1f",	-- „A“ voyant Panneau
+	[494] = "%.1f",	-- „DEC“ Voyant
 	[496] = "%.1f",	-- „VISU“
 	[505] = "%.1f",	-- „PSIC“
 	[510] = "%.1f",	-- „ELEC“
@@ -298,7 +298,7 @@ ExportScript.ConfigEveryFrameArguments =
 	[509] = "%.1f",	--	Trim direction
 
 -- LOX
-	[518] = "%.4f",	--	needle
+	--[518] = "%.4f",	--	needle
 	--[519] = "%.4f",	--	LOX flow blinker
 
 -- WARNING PANEL
@@ -343,7 +343,7 @@ ExportScript.ConfigEveryFrameArguments =
 	[563] = "%.1f",	--  PARK.
 
 -- Lamps Right Console
-	[564] = "%.1f",	--	“PRET”  grüne Doppelanzeige, unten
+	[564] = "%.1f",	--	“PRET”  Indicateur Vert
 	[565] = "%.1f",	--	„ALN“
 	[566] = "%.1f",	--	„MIP“
 	[567] = "%.1f",	--	„N.DEG“
@@ -353,15 +353,15 @@ ExportScript.ConfigEveryFrameArguments =
 	[670] = "%.1f",	--	„M02“
 	[671] = "%.1f",	--	„M03“
 
-	[571] = "%.1f",	--	“PREP” WL, gelb
-	[573] = "%.1f",	--	“DEST” WL, gelb
-	[577] = "%.1f",	--	“BAD” WL gelb/grün
+	[571] = "%.1f",	--	“PREP” WL, jaune
+	[573] = "%.1f",	--	“DEST” WL, jaune
+	[577] = "%.1f",	--	“BAD” WL jaune/vert
 	[579] = "%.1f",	--	“REC”
 	[581] = "%.1f",	--	“VAL”
 	[583] = "%.1f",	--	“MRC”
-	[595] = "%.1f",	--	“EFF” runde Warnlampe
-	[597] = "%.1f",	--	“INS” runde WL
-	[668] = "%.1f",	--  “ENC” WL gelb/grün
+	[595] = "%.1f",	--	“EFF” bouton lampe rond jaune
+	[597] = "%.1f",	--	“INS” bouton lampe rond jaune
+	[668] = "%.1f",	--  “ENC” WL jaune/vert
 
 -- VIERER ANZEIGE
 	[601] = "%.4f",	--	1. Drum
@@ -646,7 +646,6 @@ ExportScript.ConfigArguments =
 	[191] = "%.1f",	--Audio Warning Reset
 
 -- Miscelaneous Seat
-	[900] = "%.1f",	--Seat adjustment switch
 	[458] = "%.1f",	--Anti-Skid Cover
 	[459] = "%.1f",	--Anti-Skid Switch
 	[666] = "%.1f",	--Parking Brake Lever
@@ -779,18 +778,19 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	local to1, to2, from1, from2 = nil, nil, nil, nil
 	local lPCA_UR = {"", "", "", "", ""}
 	to1, to2 = lPCAUR:find("PCA_UR")
+	local lIndex, lIndex2
 	if (to1 ~= nil) then
 		for lIndex = 1, 5, 1 do
-      lIndex2 = lIndex - 1
-      from1, from2 = lPCAUR:find("PCA_LCD_1_"..lIndex2.."%c")
-			if (from2 ~= nill) then
-				to1, to2 = lPCAUR:find("%c", from2+2)
-				if (to1 ~= nil) then
-					lPCA_UR[lIndex] = lPCAUR:sub(from2+1, to1-1)
-          if (lPCA_UR[lIndex]:len() > 3) then
-            -- ExportScript.Tools.WriteToLog("cleanup UR "..string.format("%s", lPCA_UR[lIndex]))
-            lPCA_UR[lIndex] = ""
-          end
+      		lIndex2 = lIndex - 1
+      		from1, from2 = lPCAUR:find("PCA_LCD_1_"..lIndex2.."%c")
+				if (from2 ~= nil) then
+					to1, to2 = lPCAUR:find("%c", from2+2)
+					if (to1 ~= nil) then
+						lPCA_UR[lIndex] = lPCAUR:sub(from2+1, to1-1)
+          				if (lPCA_UR[lIndex]:len() > 3) then
+            				-- ExportScript.Tools.WriteToLog("cleanup UR "..string.format("%s", lPCA_UR[lIndex]))
+            				lPCA_UR[lIndex] = ""
+        			end
 				end
 			end
 		end -- for
@@ -823,7 +823,7 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 		for lIndex = 1, 5, 1 do
       lIndex2 = lIndex - 1
 			from1, from2 = lPCABR:find("PCA_LCD_2_"..lIndex2.."%c")
-			if (from2 ~= nill) then
+			if (from2 ~= nil) then
 				to1, to2 = lPCABR:find("%c", from2+2)
 				if (to1 ~= nil) then
 					lPCA_BR[lIndex] = lPCABR:sub(from2+1, to1-1)
@@ -1042,7 +1042,7 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
   end
 
   local lPCNBR = ExportScript.Tools.getListIndicatorValue(10)
-
+  local lPCN_BR1, lPCN_BR2
   if lPCNBR ~= nil and lPCNBR.PCN_BL_DIGITS ~= nil then
     lPCN_BR1 = lPCNBR.PCN_BL_DIGITS
   else
@@ -1069,7 +1069,7 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	[603] = "%.1f",	--	3.
 	[604] = "%.1f",	--	4.
 ]]
-	digits = {}
+	local digits = {}
 	digits[1] = string.format("%1.0f",mainPanelDevice:get_argument_value(601) * 10)
 	digits[2] = string.format("%1.0f",mainPanelDevice:get_argument_value(602) * 10)
 	digits[3] = string.format("%1.0f",mainPanelDevice:get_argument_value(603) * 10)
@@ -1089,20 +1089,13 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 
 -- EVF Channel post processing to get a displayable number
 --local EVF_Channels = {[0.00]=" 1", [0.05]=" 2", [0.10]=" 3", [0.15]=" 4", [0.20]=" 5", [0.25]=" 6", [0.30]=" 7", [0.35]=" 8", [0.40]=" 9", [0.45]="10", [0.50]="11", [0.55]="12", [0.60]="13", [0.65]="14", [0.70]="15", [0.75]="16", [0.80]="17", [0.85]="18", [0.90]="19", [0.95]="20"}
-  EVF_Channel = string.format("%02d", (mainPanelDevice:get_argument_value(968) * 20) + 1)
+--[[  EVF_Channel = string.format("%02d", (mainPanelDevice:get_argument_value(968) * 20) + 1)
   ExportScript.Tools.SendData(2068, EVF_Channel)
 	if ExportScript.Config.Debug then
     ExportScript.Tools.WriteToLog("2068: "..string.format("%s", EVF_Channel))
-  end
+  end ]]
 
 -- VOR ILS
---[[
-	[611] = "%.4f",	--	1. Drum
-	[612] = "%.4f",	--	2.
-	[613] = "%.4f",	--	3.
-	[614] = "%.4f",	--	4.
-	[615] = "%.4f",	--	5.
-]]
 	digits = {}
 	digits[1] = string.format("%1.0f",mainPanelDevice:get_argument_value(611) * 10)
 	digits[2] = string.format("%1.0f",mainPanelDevice:get_argument_value(612) * 10)
@@ -1246,7 +1239,7 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
     lHSI_00X0 = string.sub(lHSI_00X0, -1)
   end
   if string.len(string.format("%1d", digits[4])) > 2 then
-    lHSI_000X = '.' .. string.sub(string.format("%1d", digits[4], -1))
+    lHSI_000X = '.' .. string.sub(string.format("%1d", digits[4]), -1)
   else
     lHSI_000X = '.' .. string.format("%1d", digits[4])
   end
@@ -1337,8 +1330,7 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
     ExportScript.Tools.WriteToLog('2352 '..ExportScript.Tools.dump(lDETOT))
   end
 
-
-
+  -- end cycle
   ExportScript.Tools.FlushData()
 end
 
@@ -1437,10 +1429,10 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendDataDAC(2023, string.format("%s", lPPA2))
 
   -- IFF Digits
-  local IFF_1 = 0
-  local IFF_2 = 0
-  local IFF_3 = 0
-  local IFF_4 = 0
+  local IFF_1 = "0"
+  local IFF_2 = "0"
+  local IFF_3 = "0"
+  local IFF_4 = "0"
   IFF_1 = string.format("%d", mainPanelDevice:get_argument_value(601) * 10)
   IFF_2 = string.format("%d", mainPanelDevice:get_argument_value(602) * 10)
   IFF_3 = string.format("%d", mainPanelDevice:get_argument_value(603) * 10)
