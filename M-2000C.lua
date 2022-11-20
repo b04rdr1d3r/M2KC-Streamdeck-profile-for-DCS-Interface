@@ -9,7 +9,7 @@ ExportScript.Version.M2000C = "2.1.2"
 -----------------------------
 --     Helper functions    --
 -----------------------------
-function place_decimal(PCN_string, point_mask)
+function ExportScript.PCN_place_decimal(PCN_string, point_mask)
   local retval = ""
   if (PCN_string ~=nil) and (point_mask ~= nil) then
     if (point_mask:find("%.") ~= nil) then
@@ -990,10 +990,10 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
   local lPCN_main_L_D, lPCN_main_R_D = "", "" -- initialize variables that will hold the cleaned up text
   -- retrieve main digits and place the points according to the mask
   if (#lPCN_main_L ~= 0) then
-    lPCN_main_L_D = place_decimal(lPCN_main_L, lPCN_mask_L)
+    lPCN_main_L_D = ExportScript.PCN_place_decimal(lPCN_main_L, lPCN_mask_L)
   end
   if (#lPCN_main_R ~= 0) then
-    lPCN_main_R_D = place_decimal(lPCN_main_R, lPCN_mask_R)
+    lPCN_main_R_D = ExportScript.PCN_place_decimal(lPCN_main_R, lPCN_mask_R)
   end
 
 	if ExportScript.Config.Debug then
@@ -1136,10 +1136,13 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendData(2040, ExportScript.Tools.DisplayFormat(string.format("%1.0f",mainPanelDevice:get_argument_value(442) * 10), 1))
 	ExportScript.Tools.SendData(2041, ExportScript.Tools.DisplayFormat(string.format("%1.0f",mainPanelDevice:get_argument_value(443) * 10), 1))
 	local lTmpNumber = tonumber(string.format("%1.0f",mainPanelDevice:get_argument_value(444) * 100))
+	local lRetVal = ""
 	if lTmpNumber == 0 then
-		lTmpNumber = "00"
+		lRetVal = "00"
+	else 
+		lRetVal = ExportScript.Tools.DisplayFormat(tostring(lTmpNumber), 2)
 	end
-	ExportScript.Tools.SendData(2042, ExportScript.Tools.DisplayFormat(tostring(lTmpNumber), 2))
+	ExportScript.Tools.SendData(2042, lRetVal)
 
 	if ExportScript.Config.Debug then
 		ExportScript.Tools.WriteToLog('2038: '..ExportScript.Tools.dump(string.format("%1.0f",mainPanelDevice:get_argument_value(440) * 10)))
@@ -1394,7 +1397,7 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendDataDAC(2020, string.format("%s", lCOM1))
 	ExportScript.Tools.SendDataDAC(2021, string.format("%s", lCOM2))
 
-	-- PPA (vielelicht die Bomben Anzeige unten rechts)
+	-- PPA
 	local lPPA = list_indication(6)
 	if ExportScript.Config.Debug then
 		ExportScript.Tools.WriteToLog('PPA : '..ExportScript.Tools.dump(lPPA))
