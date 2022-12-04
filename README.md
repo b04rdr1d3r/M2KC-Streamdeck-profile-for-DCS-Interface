@@ -1,7 +1,8 @@
 ####################################################################
 # M2KC-Streamdeck-profile-for-DCS-Interface
 ####################################################################
-Mirage 2000C profile for use with DCS interface on a Stream Deck (c) Blue Storm & Bearcat 2021-2022
+
+a Mirage 2000C profile for use with DCS interface on a Stream Deck (c) Blue Storm & Bearcat 2021-2022
 
 Version 1.13
 
