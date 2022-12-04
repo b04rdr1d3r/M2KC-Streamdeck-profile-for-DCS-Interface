@@ -1,27 +1,27 @@
+####################################################################
 # M2KC-Streamdeck-profile-for-DCS-Interface
+####################################################################
 Mirage 2000C profile for use with DCS interface on a Stream Deck (c) Blue Storm & Bearcat 2021-2022
 
-Version 1.12
+Version 1.13
 
 a Mirage 2000 profile to be used with DCS Interface for Streamdeck
 
 what you need:
 
-    DCS 2.7.x
+    DCS 2.8.x
     the Mirage 2000C module by Razbam
-    a streamdeck (the standard 15 buttons one or larger)
+    a Streamdeck (the standard 15 buttons one works fine, but given how many functions are mapped, you may prefer an XL)
     DCS Interface ==> https://github.com/charlestytler/streamdeck-dcs-interface
-    DCS Interface requires DCS Exports Scripts (https://github.com/asherao/DCS-ExportScripts) forked from s-d-a version (but this one is kept up-to-date)
-    NB: asherao has significantly updated the DCS Export Scripts M-2000 module from the one s-d-a had created. I had done the same also, but the two version are not fully compatible at this stage. Until I have merged my corrections into asherao's version, you'll need to swap this my version with the one supplied by DCS Export Scipts.
+    DCS Interface requires DCS Exports Scripts (https://github.com/asherao/DCS-ExportScripts). I strongly suggest asherao's version (forked from s-d-a version but kept up-to-date)
+    NB: Our M2000C.lua file has now been merged into asherao's base repository, but if you don't have the latest versions, things may break so I amincluding in the release the right file, just in case...
 
 Once you have all DCS Export Scripts and DCS Interface running, just upload the profile and off you go...
 
-What's new in this version: bug fixes (including the fact the engine startup button for some reason stopped working !) and addition of the red light for the startup test sequences. 
+What's new in this version: HSI added, full support for the Autopilot lights, IFF, cokpit lighting, VTB illumination, reworked several pages to ensure 99% of functions are now adequately mapped AND we are now also offering an XL version !!
 
-What works: Gear lights / FBW switch VTH display and selected switches RWR lights and associated switches Jettison selective / Emergency Autopilot (basic functions) Fuel Flow and Afterburner indicators / Fuel management (incl. bongo and detot) master caution indicator panel UHF / VHF radio => caution UHF radio selector not 100% effective PCN / INS (basic functions to enable you to align when on the ground) PSM => caution channel 10 tacan selector and decimal switch VOR/ILS not fully functional Engine management + startup test switches (FBW + AP) Caution / Warning Lights External lights + internal lights (with pre-select intensity) VTB including radar, DEC mode and TAF (no display of TAF channel though :-( )
-
-What does not work well : VOR/ILS frequency setting / Tacan channel 10 selector / Radio UHF frequency setting
+Our goal is to provide you with a tool that gives you access to all the functionalities, you can then rearrange at will according to your ergonomic preferences !
 
 Please let me know any issue/bug you encounter and what you'd really want to have
 
-M-2000 icon from Togg (currently linked to a menu profile... so you can switch to whatever you want) some icons borrowed from Ikarus => https://github.com/H-J-P/Ikarus
+M-2000 icon from Togg (currently linked to a menu profile... so you can switch to whatever you want) some icons borrowed from Ikarus => https://github.com/H-J-P/Ikarus and Helios => https://github.com/HeliosVirtualCockpit/Helios/releases/latest
