@@ -1,15 +1,24 @@
 -- Mirage M-2000C
 -- for DCS Export Scripts
 -- initial version by s-d-a with additions and update by Blue Storm + Bearcat
+--  __  __ _                        ___   ___   ___   ___   _____ 
+-- |  \/  (_)                      |__ \ / _ \ / _ \ / _ \ / ____|
+-- | \  / |_ _ __ __ _  __ _  ___     ) | | | | | | | | | | |     
+-- | |\/| | | '__/ _` |/ _` |/ _ \   / /| | | | | | | | | | |     
+-- | |  | | | | | (_| | (_| |  __/  / /_| |_| | |_| | |_| | |____ 
+-- |_|  |_|_|_|  \__,_|\__, |\___| |____|\___/ \___/ \___/ \_____|
+--                      __/ |                                     
+--                     |___/   
+
 
 ExportScript.FoundDCSModule = true
-ExportScript.Version.M2000C = "2.1.5"
+ExportScript.Version.M2000C = "2.1.6"
 
 
 -----------------------------
 --     Helper functions    --
 -----------------------------
-function ExportScript.PCN_place_decimal(PCN_string, point_mask)
+function ExportScript.M2000C_PCN_place_decimal(PCN_string, point_mask)
   local retval = ""
   if (PCN_string ~=nil) and (point_mask ~= nil) then
     if (point_mask:find("%.") ~= nil) then
@@ -26,6 +35,30 @@ function ExportScript.PCN_place_decimal(PCN_string, point_mask)
     end
   end
   return retval
+end
+
+function ExportScript.M2000C_getListIndicatorValueByName(IndicatorID, NameID, Length)
+	local ListIindicator = list_indication(IndicatorID)
+
+	if ListIindicator == "" then
+		return nil
+    end
+
+    local data = ""
+    while data:len() < Length do data = data .. " " end
+
+	local ListindicatorMatch = ListIindicator:gmatch("-----------------------------------------\n([^\n]+)\n([^\n]*)\n")
+	while true do
+		local Key, Value = ListindicatorMatch()
+		if not Key then
+			break
+        end
+        if Key == NameID then
+            Value = data .. Value
+            return Value:sub(-Length)
+        end
+	end
+	return data
 end
 
 -----------------------------
@@ -50,7 +83,7 @@ ExportScript.ConfigEveryFrameArguments =
 	[187] = "%.1f",	--LED green, ADI
 	[188] = "%.1f",	--LED green, ADI
 
--- RWR Lamps
+-- VCM voyants (RWR)
 	[229] = "%.1f",	--V
 	[230] = "%.1f",	--BR
 	[231] = "%.1f",	--DA
@@ -111,6 +144,8 @@ ExportScript.ConfigEveryFrameArguments =
  	[373] = "%.1f",	--Afterburner light
 	[376] = "%.1f",	--starter light
 	[198] = "%.1f",	--tranfer
+
+-- Master Caution / Warning Lights	
 	[199] = "%.1f",	--master-warning
 	[200] = "%.1f",	--master-caution
 -- INSTRUMENTS -------------------------------------------
@@ -385,12 +420,6 @@ ExportScript.ConfigEveryFrameArguments =
 	[632] = "%.1f",	--	Bouton avec voyant "C"
 	[634] = "%.1f",	--	Bouton avec voyant "F"
 
--- Miscelaneous Right Panel
-	[657] = "%.1f",    -- Hydraulic Emergency Pump Switch
-	[658] = "%.1f",    -- Audio Warning Switch
-	[659] = "%.1f",    -- Pitot Heat Cover
-	[660] = "%.1f",    -- Pitot Heat Switch
-
 -- Panel lights
 	[720] = "%.4f",	--	Flash MIP, rouge
 	[721] = "%.4f",	--	Rétroéclairage MIP, rouge
@@ -548,6 +577,11 @@ ExportScript.ConfigArguments =
 	[594] = "%.1f",	--INS Clear Button
 	[596] = "%.1f",	--INS ENTER Button
 	[667] = "%.1f",	--AUTO Navigation
+	[437] = "%.1f",	--BAD button light
+	[438] = "%.1f",	--REC button light
+	[439] = "%.1f",	--MRQ button light
+	[440] = "%.1f",	--VAL button light
+
 
 -- PSM
 	[627] = "%.1f",	--INS Mode Selector
@@ -610,27 +644,6 @@ ExportScript.ConfigArguments =
 	[475] = "%.1f",	--Engine Emergency Control Cover
 	[476] = "%.1f",	--Engine Emergency Control Switch
 	[470] = "%.1f",	--Radar WOW Emitter Authorize Switch
-	-- Radio Panel
-	[429] = "%.1f",	--UHF Power 5W/25W Switch
-	[430] = "%.1f",	--UHF SIL Switch
-	[431] = "%.1f",	--UHF E-A2 Switch
-	[432] = "%.1f",	--UHF CDE Switch
-	[433] = "%.3f",	--UHF Mode Switch
-	[434] = "%.1f",	--UHF TEST Switch
-	[435] = "%.1f",	--UHF Knob
-	[437] = "%.1f",	--U/VHF TEST Switch
-	[438] = "%.1f",	--U/VHF E+A2 Switch
-	[439] = "%.1f",	--U/VHF SIL Switch
-	[440] = "%.1f",	--U/VHF Select 100 MHz
-	[441] = "%.1f",	--U/VHF Select 10 MHz
-	[442] = "%.1f",	--U/VHF Select 1 MHz
-	[443] = "%.1f",	--U/VHF Select 100 KHz
-	[444] = "%.1f",	--U/VHF Select 25 KHz
-	[445] = "%.1f",	--U/VHF Knob
-	[446] = "%.1f",	--U/VHF Mode Switch 1
-	[447] = "%.1f",	--U/VHF Power 5W/25W Switch
-	[448] = "%.1f",	--U/VHF Manual/Preset
-	[950] = "%.1f",	--U/VHF Mode
 
 
 -- Navigational Antennas
@@ -647,8 +660,11 @@ ExportScript.ConfigArguments =
 
 -- Miscelaneous Right Panel
 	[657] = "%.1f",	-- Hydraulic Emergency Pump Switch
+	[658] = "%.1f",    -- Audio Warning Switch
+	[659] = "%.1f",    -- Pitot Heat Cover
+	[660] = "%.1f",    -- Pitot Heat Switch
 
--- Miscelaneous Left Panel
+	-- Miscelaneous Left Panel
 	[191] = "%.1f",	--Audio Warning Reset
 
 -- Miscelaneous Seat
@@ -700,6 +716,30 @@ ExportScript.ConfigArguments =
 	[636] = "%.1f",	--ECS Air Exchange Switch
 	[637] = "%.1f",	--ECS Temperature Select Knob {-1.0,1.0} in 0.1 steps
 	[638] = "%.1f",	--ECS Defog Switch
+
+	-- Radio Panel
+	[429] = "%.1f",	--UHF Power 5W/25W Switch
+	[430] = "%.1f",	--UHF SIL Switch
+	[431] = "%.1f",	--UHF E-A2 Switch
+	[432] = "%.1f",	--UHF CDE Switch
+	[433] = "%.3f",	--UHF Mode Switch
+	[434] = "%.1f",	--UHF TEST Switch
+	[435] = "%.1f",	--UHF Knob
+	[441] = "%.1f",	--U/VHF Select 10 MHz
+	[442] = "%.1f",	--U/VHF Select 1 MHz
+	[443] = "%.1f",	--U/VHF Select 100 KHz
+	[444] = "%.1f",	--U/VHF Select 25 KHz
+	[445] = "%.1f",	--U/VHF Knob
+	[446] = "%.1f",	--U/VHF Mode Switch 1
+	[447] = "%.1f",	--U/VHF Power 5W/25W Switch
+	[448] = "%.1f",	--U/VHF Manual/Preset
+	[950] = "%.1f", -- Mode knob
+
+-- Countermeasures
+	[991] = "%d",	-- LL
+	[992] = "%d",	-- EM
+	[993] = "%d",	-- IR
+	[994] = "%d",	-- EO
 
 }
 
@@ -996,25 +1036,25 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
   local lPCN_main_L_D, lPCN_main_R_D = "", "" -- initialize variables that will hold the cleaned up text
   -- retrieve main digits and place the points according to the mask
   if (#lPCN_main_L ~= 0) then
-    lPCN_main_L_D = ExportScript.PCN_place_decimal(lPCN_main_L, lPCN_mask_L)
+    lPCN_main_L_D = ExportScript.M2000C_PCN_place_decimal(lPCN_main_L, lPCN_mask_L)
   end
   if (#lPCN_main_R ~= 0) then
-    lPCN_main_R_D = ExportScript.PCN_place_decimal(lPCN_main_R, lPCN_mask_R)
+    lPCN_main_R_D = ExportScript.M2000C_PCN_place_decimal(lPCN_main_R, lPCN_mask_R)
   end
 
 	if ExportScript.Config.Debug then
-		 -- string with max 1 charachters
+		 -- string with max 1 characters
 		ExportScript.Tools.WriteToLog("2024: "..string.format("%s", lPCN_sub_L_T))
 		ExportScript.Tools.WriteToLog("2025: "..string.format("%s", lPCN_sub_R_T))
 		ExportScript.Tools.WriteToLog("2026: "..string.format("%s", lPCN_sub_L_B))
 		ExportScript.Tools.WriteToLog("2027: "..string.format("%s", lPCN_sub_R_B))
-		 -- string with max 9 charachters
+		 -- string with max 9 characters
 		ExportScript.Tools.WriteToLog("2028: "..string.format("%s", lPCN_main_L))
 		ExportScript.Tools.WriteToLog("2029: "..string.format("%s", lPCN_main_R))
-    -- export string on txo Lines
+    -- export string on two Lines
     ExportScript.Tools.WriteToLog("2054: "..string.format("%s", lPCN_sub_L_T .. "\n" .. lPCN_sub_L_B))
 		ExportScript.Tools.WriteToLog("2055: "..string.format("%s", lPCN_sub_R_T .. "\n" .. lPCN_sub_R_B))
-    -- export clean strings with poinjts
+    -- export clean strings with points
     ExportScript.Tools.WriteToLog("2056: "..string.format("%s", lPCN_main_L_D))
 		ExportScript.Tools.WriteToLog("2057: "..string.format("%s", lPCN_main_R_D))
   end
@@ -1093,13 +1133,8 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendData(2034, digits[3])
 	ExportScript.Tools.SendData(2035, digits[4])
 
--- EVF Channel post processing to get a displayable number
---local EVF_Channels = {[0.00]=" 1", [0.05]=" 2", [0.10]=" 3", [0.15]=" 4", [0.20]=" 5", [0.25]=" 6", [0.30]=" 7", [0.35]=" 8", [0.40]=" 9", [0.45]="10", [0.50]="11", [0.55]="12", [0.60]="13", [0.65]="14", [0.70]="15", [0.75]="16", [0.80]="17", [0.85]="18", [0.90]="19", [0.95]="20"}
---[[  EVF_Channel = string.format("%02d", (mainPanelDevice:get_argument_value(968) * 20) + 1)
-  ExportScript.Tools.SendData(2068, EVF_Channel)
-	if ExportScript.Config.Debug then
-    ExportScript.Tools.WriteToLog("2068: "..string.format("%s", EVF_Channel))
-  end ]]
+-- EVF	
+	ExportScript.Tools.SendData(2068, ExportScript.M2000C_getListIndicatorValueByName(11, "evf-digits", 2))
 
 -- VOR ILS
 	digits = {}
