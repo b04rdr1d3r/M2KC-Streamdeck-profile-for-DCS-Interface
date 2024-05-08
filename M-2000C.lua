@@ -1,40 +1,138 @@
 -- Mirage M-2000C
 -- for DCS Export Scripts
 -- initial version by s-d-a with additions and update by Blue Storm + Bearcat
---  __  __ _                        ___   ___   ___   ___   _____ 
+--  __  __ _                        ___   ___   ___   ___   _____
 -- |  \/  (_)                      |__ \ / _ \ / _ \ / _ \ / ____|
--- | \  / |_ _ __ __ _  __ _  ___     ) | | | | | | | | | | |     
--- | |\/| | | '__/ _` |/ _` |/ _ \   / /| | | | | | | | | | |     
--- | |  | | | | | (_| | (_| |  __/  / /_| |_| | |_| | |_| | |____ 
+-- | \  / |_ _ __ __ _  __ _  ___     ) | | | | | | | | | | |
+-- | |\/| | | '__/ _` |/ _` |/ _ \   / /| | | | | | | | | | |
+-- | |  | | | | | (_| | (_| |  __/  / /_| |_| | |_| | |_| | |____
 -- |_|  |_|_|_|  \__,_|\__, |\___| |____|\___/ \___/ \___/ \_____|
---                      __/ |                                     
---                     |___/   
+--                      __/ |
+--                     |___/
 
 
 ExportScript.FoundDCSModule = true
-ExportScript.Version.M2000C = "2.1.6"
-
+ExportScript.Version.M2000C = "2.1.8"
 
 -----------------------------
 --     Helper functions    --
 -----------------------------
-function ExportScript.M2000C_PCN_place_decimal(PCN_string, point_mask)
-  local retval = ""
-  if (PCN_string ~=nil) and (point_mask ~= nil) then
-    if (point_mask:find("%.") ~= nil) then
-      local i = 0
-      for i = 1, #point_mask, 1 do
-        if point_mask:sub(i, i) == "." then
-          retval = retval .. "." .. PCN_string:sub(i, i)
-        else
-          retval = retval .. PCN_string:sub(i, i)
-        end
-      end
-    else
-      retval = PCN_string
-    end
+local function decodeSegment(segment)
+  local segDecode = {
+    ["1111101"] = "0",
+    ["0011000"] = "1",
+    ["0110111"] = "2",
+    ["0111110"] = "3",
+    ["1011010"] = "4",
+    ["1101110"] = "5",
+    ["1101111"] = "6",
+    ["0111000"] = "7",
+    ["1111111"] = "8",
+    ["1111110"] = "9",
+    ["0000000"] = " "
+  }
+  local retval = segDecode[segment]
+  if retval == nil then
+    retval = "X" -- a digit is malfunctionning
   end
   return retval
+end
+
+local function decodePCNDisplay(digits, seg1, seg2, seg3, seg4, seg5, seg6, seg0, seg7)
+  local lPCN_DIGIT = {}
+  local lPCN_DECODED = ""
+  for i = 1, digits do
+    lPCN_DIGIT[i] = string.sub(seg1, i, i)..string.sub(seg2, i, i)..string.sub(seg3, i, i)..string.sub(seg4, i, i)..string.sub(seg5, i, i)..string.sub(seg6, i, i)..string.sub(seg0, i, i)
+    lPCN_DIGIT[i] = string.gsub(lPCN_DIGIT[i], "([a-z])", "1")
+    lPCN_DIGIT[i] = string.gsub(lPCN_DIGIT[i], " ", "0")
+    lPCN_DECODED = lPCN_DECODED..string.format("%s", decodeSegment(lPCN_DIGIT[i]))
+    if ExportScript.Config.Debug then
+      ExportScript.Tools.WriteToLog('PCN_DIGIT['..string.format("%s", i)..']='..string.format("%s", lPCN_DIGIT[i]))
+      ExportScript.Tools.WriteToLog('PCN_DIGIT['..string.format("%s", i)..']='..string.format("%s", decodeSegment(lPCN_DIGIT[i])))
+    end
+  end
+
+
+	local n = 0
+	local m = 1
+	for i = 1, digits do
+		if string.sub(seg7, i, i) ~= " " then
+				lPCN_DECODED = string.sub(lPCN_DECODED, 1, i - n).."."..string.sub(lPCN_DECODED, i + m, string.len(lPCN_DECODED))
+				n = n - 1
+				m = m + 1
+		end
+	end
+
+  return lPCN_DECODED
+end
+
+local function getPCN2DigitR()
+	local li = list_indication(9)
+	local m = li:gmatch("-----------------------------------------\n([^\n]+)\n([^\n]*)\n")
+	local east = " "
+	local west = " "
+	local plus = " "
+	local minus = " "
+	while true do
+		local name, value = m()
+		if not name then break end
+
+		if name == "PCN_UR_E" then
+			east="E"
+		end
+		if name == "PCN_UR_W" then
+			west="W"
+		end
+		if name == "PCN_UR_P" then
+			plus="+"
+		end
+		if name == "PCN_UR_M" then
+			minus="-"
+		end
+	end
+	return string.format("%-4s", string.sub(east..west..plus..minus,1,4))
+end
+
+local function getPCN2DigitL()
+	local li = list_indication(9)
+	local m = li:gmatch("-----------------------------------------\n([^\n]+)\n([^\n]*)\n")
+	local north = " "
+	local south = " "
+	local plus = " "
+	local minus = " "
+	while true do
+		local name, value = m()
+		if not name then break end
+
+		if name == "PCN_UL_N" then
+			north="N"
+		end
+		if name == "PCN_UL_S" then
+			south="S"
+		end
+		if name == "PCN_UL_P" then
+			plus="+"
+		end
+		if name == "PCN_UL_M" then
+			minus="-"
+		end
+	end
+	return string.format("%-4s", string.sub(north..south..plus..minus,1,4))
+end
+
+local function getPCNValue(nameStr, id)
+	local li = list_indication(id)
+	local m = li:gmatch("-----------------------------------------\n([^\n]+)\n([^\n]*)\n")
+	while true do
+		local name, value = m()
+		if not name then break end
+
+		if name == nameStr then
+			value = "  " .. value
+			return value:sub(-2)
+	  	end
+	end
+ 	return "  "
 end
 
 function ExportScript.M2000C_getListIndicatorValueByName(IndicatorID, NameID, Length)
@@ -42,10 +140,10 @@ function ExportScript.M2000C_getListIndicatorValueByName(IndicatorID, NameID, Le
 
 	if ListIindicator == "" then
 		return nil
-    end
+  end
 
-    local data = ""
-    while data:len() < Length do data = data .. " " end
+  local data = ""
+  while data:len() < Length do data = data .. " " end
 
 	local ListindicatorMatch = ListIindicator:gmatch("-----------------------------------------\n([^\n]+)\n([^\n]*)\n")
 	while true do
@@ -59,6 +157,25 @@ function ExportScript.M2000C_getListIndicatorValueByName(IndicatorID, NameID, Le
         end
 	end
 	return data
+end
+
+-- Uses unicode characters to mask part of a streamdeck icon with text.
+-- Make sure that streamdeck text is in Courier New, 9pts, centered.
+function text_for_split_indicator_light(first_light, second_light)
+	local stringOutput = ""
+
+	if first_light == true then
+		stringOutput = stringOutput .. "\n \n"
+	else
+		stringOutput = stringOutput .. "██████████\n▀▀▀▀▀▀▀▀▀▀\n"
+	end
+	if second_light == true then
+		stringOutput = stringOutput .. " \n \n\n"
+	else
+		stringOutput = stringOutput .. "▄▄▄▄▄▄▄▄▄▄\n██████████\n"
+	end
+
+	return stringOutput
 end
 
 -----------------------------
@@ -145,7 +262,7 @@ ExportScript.ConfigEveryFrameArguments =
 	[376] = "%.1f",	--starter light
 	[198] = "%.1f",	--tranfer
 
--- Master Caution / Warning Lights	
+-- Master Caution / Warning Lights
 	[199] = "%.1f",	--master-warning
 	[200] = "%.1f",	--master-caution
 -- INSTRUMENTS -------------------------------------------
@@ -794,6 +911,16 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendData(2000, ExportScript.Tools.RoundFreqeuncy((UHF_RADIO:get_frequency()/1000000))) -- ExportScript.Tools.RoundFreqeuncy(frequency (MHz|KHz), format ("7.3"), PrefixZeros (false), LeastValue (0.025))
 	]]
 
+	-- Master Caution/Warning. Uses unicode characters to mask relevant part of the icon if it's off.
+	local caution_on = mainPanelDevice:get_argument_value(199) == 1.0
+	local warning_on = mainPanelDevice:get_argument_value(200) == 1.0
+	ExportScript.Tools.SendData(2100, text_for_split_indicator_light(caution_on, warning_on))
+
+	-- Autopilot master lamp. Uses unicode characters to mask relevant part of the icon if it's off.
+	local AP_yellow = mainPanelDevice:get_argument_value(283) == 1.0
+	local AP_green = mainPanelDevice:get_argument_value(284) == 1.0
+	ExportScript.Tools.SendData(2101, text_for_split_indicator_light(AP_yellow, AP_green))
+
 	-- ECM Mode Switch
 	-- [194] = "%.1f",	--ECM Box Mode Switch
 	local lECM_On = (mainPanelDevice:get_argument_value(194) > 0.0 and true or false)
@@ -931,10 +1058,10 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendData(2021, string.format("%s", lCOM2))
 
  -- extraction of the text showed on the VHF radio panel
- local lVHF =ExportScript.Tools.getListIndicatorValue(8)
-  if ExportScript.Config.Debug then
-		ExportScript.Tools.WriteToLog('lVHF : '..ExportScript.Tools.dump(lVHF))
-	end
+local lVHF =ExportScript.Tools.getListIndicatorValue(8)
+if ExportScript.Config.Debug then
+  ExportScript.Tools.WriteToLog('lVHF : '..ExportScript.Tools.dump(lVHF))
+end
 
   if lVHF ~= nil and lVHF.text_COM_VHF ~= nil then
     -- string with max 3 charachters
@@ -981,15 +1108,68 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendData(2022, string.format("%s", lPPA1))
 	ExportScript.Tools.SendData(2023, string.format("%s", lPPA2))
 
-	-- PCN_UR Navigation Displays
+
+  -- PCN Poste de Commande Navigation // New code for 2.9 -> data exported by segment and no longer by digit
 	if ExportScript.Config.Debug then
-		local lPCNUR = list_indication(9)
-		ExportScript.Tools.WriteToLog('lPCNUR : '..ExportScript.Tools.dump(lPCNUR))
+		ExportScript.Tools.WriteToLog('lPCNUR : '..ExportScript.Tools.dump(list_indication(9)))
+		ExportScript.Tools.WriteToLog('lPCNBR : '..ExportScript.Tools.dump(list_indication(10)))
+	end
+  local lPCNUR = ExportScript.Tools.getListIndicatorValue(9)
+
+	local lPCN_UL_SEG0 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UL_SEG0", 5)
+	local lPCN_UL_SEG1 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UL_SEG1", 5)
+	local lPCN_UL_SEG2 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UL_SEG2", 5)
+	local lPCN_UL_SEG3 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UL_SEG3", 5)
+	local lPCN_UL_SEG4 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UL_SEG4", 5)
+	local lPCN_UL_SEG5 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UL_SEG5", 5)
+	local lPCN_UL_SEG6 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UL_SEG6", 5)
+	local lPCN_UL_SEG7 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UL_SEG7", 5)
+  local lPCN_UL_DECODED = decodePCNDisplay(5, lPCN_UL_SEG1, lPCN_UL_SEG2, lPCN_UL_SEG3, lPCN_UL_SEG4, lPCN_UL_SEG5, lPCN_UL_SEG6, lPCN_UL_SEG0, lPCN_UL_SEG7)
+	if ExportScript.Config.Debug then
+		ExportScript.Tools.WriteToLog("lPCN_UL_DECODED: "..lPCN_UL_DECODED)
 	end
 
-	local lPCNUR = ExportScript.Tools.getListIndicatorValue(9)
+	local lPCN_UR_SEG0 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UR_SEG0", 6)
+	local lPCN_UR_SEG1 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UR_SEG1", 6)
+	local lPCN_UR_SEG2 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UR_SEG2", 6)
+	local lPCN_UR_SEG3 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UR_SEG3", 6)
+	local lPCN_UR_SEG4 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UR_SEG4", 6)
+	local lPCN_UR_SEG5 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UR_SEG5", 6)
+	local lPCN_UR_SEG6 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UR_SEG6", 6)
+	local lPCN_UR_SEG7 = ExportScript.M2000C_getListIndicatorValueByName(9, "PCN_UR_SEG7", 6)
+  local lPCN_UR_DECODED = decodePCNDisplay(6, lPCN_UR_SEG1, lPCN_UR_SEG2, lPCN_UR_SEG3, lPCN_UR_SEG4, lPCN_UR_SEG5, lPCN_UR_SEG6, lPCN_UR_SEG0, lPCN_UR_SEG7)
+	if ExportScript.Config.Debug then
+		ExportScript.Tools.WriteToLog("lPCN_UR_DECODED: "..lPCN_UR_DECODED)
+	end
 
-  local lPCN_sub_L_T, lPCN_sub_R_T, lPCN_sub_L_B, lPCN_sub_R_B, lPCN_main_L, lPCN_main_R, lPCN_mask_L, lPCN_mask_R = "", "", "", "", "", "", "", ""
+	local lPCN_BL_SEG0 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BL_SEG0", 2)
+	local lPCN_BL_SEG1 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BL_SEG1", 2)
+	local lPCN_BL_SEG2 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BL_SEG2", 2)
+	local lPCN_BL_SEG3 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BL_SEG3", 2)
+	local lPCN_BL_SEG4 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BL_SEG4", 2)
+	local lPCN_BL_SEG5 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BL_SEG5", 2)
+  local lPCN_BL_SEG6 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BL_SEG6", 2)
+  local lPCN_BL_DECODED = decodePCNDisplay(2, lPCN_BL_SEG1, lPCN_BL_SEG2, lPCN_BL_SEG3, lPCN_BL_SEG4, lPCN_BL_SEG5, lPCN_BL_SEG6, lPCN_BL_SEG0, "  ")
+	if ExportScript.Config.Debug then
+		ExportScript.Tools.WriteToLog("lPCN_BL_DECODED: "..lPCN_BL_DECODED)
+	end
+
+	local lPCN_BR_SEG0 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BR_SEG0", 2)
+	local lPCN_BR_SEG1 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BR_SEG1", 2)
+	local lPCN_BR_SEG2 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BR_SEG2", 2)
+	local lPCN_BR_SEG3 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BR_SEG3", 2)
+	local lPCN_BR_SEG4 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BR_SEG4", 2)
+	local lPCN_BR_SEG5 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BR_SEG5", 2)
+	local lPCN_BR_SEG6 = ExportScript.M2000C_getListIndicatorValueByName(10, "PCN_BR_SEG6", 2)
+  local lPCN_BR_DECODED = decodePCNDisplay(2, lPCN_BR_SEG1, lPCN_BR_SEG2, lPCN_BR_SEG3, lPCN_BR_SEG4, lPCN_BR_SEG5, lPCN_BR_SEG6, lPCN_BR_SEG0, "  ")
+	if ExportScript.Config.Debug then
+		ExportScript.Tools.WriteToLog("lPCN_BR_DECODED: "..lPCN_BR_DECODED)
+	end
+
+  ExportScript.Tools.SendData(9031, getPCN2DigitL())		-- up/left 2-digit vertical
+	ExportScript.Tools.SendData(9033, getPCN2DigitR())		-- up/middle 2-digit vertical
+  
+  local lPCN_sub_L_T, lPCN_sub_R_T, lPCN_sub_L_B, lPCN_sub_R_B = "", "", "", ""
   -- map N and S
   if lPCNUR.PCN_UL_N ~= nil then
     lPCN_sub_L_T = lPCNUR.PCN_UL_N
@@ -1018,29 +1198,6 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
     lPCN_sub_R_B = lPCNUR.PCN_UR_M
   end
 
-  -- retrieve main text
-  if lPCNUR.PCN_UL_DIGITS ~= nil then
-    lPCN_main_L = lPCNUR.PCN_UL_DIGITS
-  end
-  if lPCNUR.PCN_UR_DIGITS ~= nil then
-    lPCN_main_R = lPCNUR.PCN_UR_DIGITS
-  end
-  -- retrieve mask
-  if lPCNUR.PCN_UL_POINTS ~= nil then
-     lPCN_mask_L = lPCNUR.PCN_UL_POINTS
-  end
-  if lPCNUR.PCN_UR_POINTS ~= nil then
-     lPCN_mask_R = lPCNUR.PCN_UR_POINTS
-  end
-
-  local lPCN_main_L_D, lPCN_main_R_D = "", "" -- initialize variables that will hold the cleaned up text
-  -- retrieve main digits and place the points according to the mask
-  if (#lPCN_main_L ~= 0) then
-    lPCN_main_L_D = ExportScript.M2000C_PCN_place_decimal(lPCN_main_L, lPCN_mask_L)
-  end
-  if (#lPCN_main_R ~= 0) then
-    lPCN_main_R_D = ExportScript.M2000C_PCN_place_decimal(lPCN_main_R, lPCN_mask_R)
-  end
 
 	if ExportScript.Config.Debug then
 		 -- string with max 1 characters
@@ -1048,21 +1205,14 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 		ExportScript.Tools.WriteToLog("2025: "..string.format("%s", lPCN_sub_R_T))
 		ExportScript.Tools.WriteToLog("2026: "..string.format("%s", lPCN_sub_L_B))
 		ExportScript.Tools.WriteToLog("2027: "..string.format("%s", lPCN_sub_R_B))
-		 -- string with max 9 characters
-		ExportScript.Tools.WriteToLog("2028: "..string.format("%s", lPCN_main_L))
-		ExportScript.Tools.WriteToLog("2029: "..string.format("%s", lPCN_main_R))
     -- export string on two Lines
     ExportScript.Tools.WriteToLog("2054: "..string.format("%s", lPCN_sub_L_T .. "\n" .. lPCN_sub_L_B))
 		ExportScript.Tools.WriteToLog("2055: "..string.format("%s", lPCN_sub_R_T .. "\n" .. lPCN_sub_R_B))
     -- export clean strings with points
-    ExportScript.Tools.WriteToLog("2056: "..string.format("%s", lPCN_main_L_D))
-		ExportScript.Tools.WriteToLog("2057: "..string.format("%s", lPCN_main_R_D))
+    ExportScript.Tools.WriteToLog("2056: "..string.format("%s", lPCN_UL_DECODED))
+		ExportScript.Tools.WriteToLog("2057: "..string.format("%s", lPCN_UR_DECODED))
   end
 
-	lPCN_main_L = lPCN_main_L:gsub(":", "¦")
-	lPCN_main_R = lPCN_main_R:gsub(":", "¦")
-	lPCN_main_L = lPCN_main_L:sub(0, 10)
-	lPCN_main_R = lPCN_main_R:sub(0, 10)
 	lPCN_sub_L_T = lPCN_sub_L_T:sub(0, 2)
 	lPCN_sub_R_T = lPCN_sub_R_T:sub(0, 2)
 	lPCN_sub_L_B = lPCN_sub_L_B:sub(0, 2)
@@ -1072,41 +1222,24 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendData(2025, string.format("%s", lPCN_sub_R_T))
 	ExportScript.Tools.SendData(2026, string.format("%s", lPCN_sub_L_B))
 	ExportScript.Tools.SendData(2027, string.format("%s", lPCN_sub_R_B))
-	ExportScript.Tools.SendData(2028, string.format("%s", lPCN_main_L))
-	ExportScript.Tools.SendData(2029, string.format("%s", lPCN_main_R))
+
   -- code below enables the recovery of the two elements on top of each other
   ExportScript.Tools.SendData(2054, string.format("%s", lPCN_sub_L_T .. "\n" .. lPCN_sub_L_B))
   ExportScript.Tools.SendData(2055, string.format("%s", lPCN_sub_R_T .. "\n" .. lPCN_sub_R_B))
-  ExportScript.Tools.SendData(2056, string.format("%s", lPCN_main_L_D))
-  ExportScript.Tools.SendData(2057, string.format("%s", lPCN_main_R_D))
+  ExportScript.Tools.SendData(2056, string.format("%s", lPCN_UL_DECODED))
+  ExportScript.Tools.SendData(2057, string.format("%s", lPCN_UR_DECODED))
 
-	-- PCN_BR (Poste de Commande Navigation)
-  -- NEW CODE below for 2.7
-  local lPCNBR = list_indication(10)
-  if ExportScript.Config.Debug then
-  	ExportScript.Tools.WriteToLog('lPCNBR : '..ExportScript.Tools.dump(lPCNBR))
-  end
-
-  local lPCNBR = ExportScript.Tools.getListIndicatorValue(10)
-  local lPCN_BR1, lPCN_BR2
-  if lPCNBR ~= nil and lPCNBR.PCN_BL_DIGITS ~= nil then
-    lPCN_BR1 = lPCNBR.PCN_BL_DIGITS
-  else
-    lPCN_BR1 = "  "
-  end
-  if lPCNBR ~= nil and lPCNBR.PCN_BR_DIGITS ~= nil then
-    lPCN_BR2 = lPCNBR.PCN_BR_DIGITS
-  else
-    lPCN_BR2 = "  "
-  end
+ 
 
 	-- string with max 2 charachters
 	if ExportScript.Config.Debug then
-		ExportScript.Tools.WriteToLog("2030: "..string.format("%s", lPCN_BR1))
-		ExportScript.Tools.WriteToLog("2031: "..string.format("%s", lPCN_BR2))
+		ExportScript.Tools.WriteToLog("2030: "..string.format("%s", lPCN_BL_DECODED))
+		ExportScript.Tools.WriteToLog("2031: "..string.format("%s", lPCN_BR_DECODED))
 	end
-	ExportScript.Tools.SendData(2030, string.format("%s", lPCN_BR1))
-	ExportScript.Tools.SendData(2031, string.format("%s", lPCN_BR2))
+	ExportScript.Tools.SendData(2030, string.format("%s", lPCN_BL_DECODED))
+	ExportScript.Tools.SendData(2031, string.format("%s", lPCN_BR_DECODED))
+
+
 
 -- Radar IFF Mode
 --[[
@@ -1133,7 +1266,7 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	ExportScript.Tools.SendData(2034, digits[3])
 	ExportScript.Tools.SendData(2035, digits[4])
 
--- EVF	
+-- EVF
 	ExportScript.Tools.SendData(2068, ExportScript.M2000C_getListIndicatorValueByName(11, "evf-digits", 2))
 
 -- VOR ILS
@@ -1180,7 +1313,7 @@ function ExportScript.ProcessIkarusDCSConfigLowImportance(mainPanelDevice)
 	local lRetVal = ""
 	if lTmpNumber == 0 then
 		lRetVal = "00"
-	else 
+	else
 		lRetVal = ExportScript.Tools.DisplayFormat(tostring(lTmpNumber), 2)
 	end
 	ExportScript.Tools.SendData(2042, lRetVal)
@@ -1484,7 +1617,7 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 		end
 	end
 
-	-- string with max 2 charachters
+	-- string with max 2 characters
 	if ExportScript.Config.Debug then
 		ExportScript.Tools.WriteToLog("lPPA1: "..string.format("%s", lPPA1))
 		ExportScript.Tools.WriteToLog("lPPA2: "..string.format("%s", lPPA2))
@@ -1495,8 +1628,8 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
 	-- send data
 	ExportScript.Tools.FlushDataDAC(#ExportScript.Config.DAC)
 
--- uncomment the code below to access DCS exported parameters
---[[
+-- uncomment dump all the parameters in the log
+  --[[
 	ExportScript.Tools.WriteToLog('list_cockpit_params(): '..ExportScript.Tools.dump(list_cockpit_params()))
 	ExportScript.Tools.WriteToLog('CMSP: '..ExportScript.Tools.dump(list_indication(7)))
 
@@ -1512,11 +1645,11 @@ function ExportScript.ProcessDACConfigLowImportance(mainPanelDevice)
   -- getmetatable get function name from devices
 	local ltmp1 = 0
 	for ltmp2 = 1, 70, 1 do
-		ltmp1 = GetDevice(ltmp2)
-		ExportScript.Tools.WriteToLog(ltmp2..': '..ExportScript.Tools.dump(ltmp1))
-		ExportScript.Tools.WriteToLog(ltmp2..' (metatable): '..ExportScript.Tools.dump(getmetatable(ltmp1)))
+	  ltmp1 = GetDevice(ltmp2)
+	  ExportScript.Tools.WriteToLog(ltmp2..': '..ExportScript.Tools.dump(ltmp1))
+	  ExportScript.Tools.WriteToLog(ltmp2..' (metatable): '..ExportScript.Tools.dump(getmetatable(ltmp1)))
 	end
-]]
+--]]
 end
 
 -- end script
